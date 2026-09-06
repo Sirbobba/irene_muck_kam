@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Irenes Muckarkam - 52 Veckor till Pension</title>
+  
+  <!-- Apple iOS / iPadOS PWA Support -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Irene Muck">
+  <meta name="theme-color" content="#020617">
+  
+  <!-- Inline Apple Touch Icon (Golden Comb on Dark Background) -->
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230f172a'/><path d='M20 30 h60 v15 h-60 z' fill='%23f59e0b'/><path d='M25 45 v30 M33 45 v30 M41 45 v30 M49 45 v30 M57 45 v30 M65 45 v30 M73 45 v30' stroke='%23fbbf24' stroke-width='4' stroke-linecap='round'/></svg>">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Supabase Official Client JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    @keyframes breakComb {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      50% { transform: translateY(14px) rotate(20deg); opacity: 0.8; }
+      100% { transform: translateY(40px) rotate(55deg); opacity: 0; }
+    }
+    .tooth-breaking {
+      animation: breakComb 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    }
+    @keyframes wiggleLock {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-3px); }
+      40%, 80% { transform: translateX(3px); }
+    }
+    .tooth-locked-wiggle {
+      animation: wiggleLock 0.35s ease-in-out;
+    }
+    .glass-card {
+      background: rgba(30, 41, 59, 0.85);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      height: 7px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(217, 119, 6, 0.5);
+      border-radius: 999px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.2);
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen p-3 md:p-8 font-sans antialiased selection:bg-amber-500 selection:text-black">
+  <canvas id="confettiCanvas" class="fixed inset-0 pointer-events-none z-50"></canvas>
+
+  <!-- Toast notification banner -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 max-w-sm px-5 py-3 rounded-2xl bg-slate-900 text-white shadow-2xl border border-slate-700 text-xs flex items-center gap-3 transition-all duration-300 opacity-0 translate-y-4 pointer-events-none">
+    <span id="toastIcon" class="text-xl">🔒</span>
+    <span id="toastMsg" class="font-medium">Meddelande</span>
+  </div>
+
+  <div class="max-w-4xl mx-auto space-y-6">
+    
+    <!-- Top Sync & Apple Banner -->
+    <div class="flex flex-wrap items-center justify-between gap-3 px-1 text-xs text-slate-400">
+      <div class="flex items-center gap-2">
+        <span id="dbStatusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span id="dbStatusText" class="font-medium text-emerald-400">Ansluten till Supabase Cloud (Live Realtime)</span>
+      </div>
+
+      <!-- Add to home screen hint for Apple Safari -->
+      <div class="hidden sm:flex items-center gap-1.5 text-slate-400 text-[11px]">
+        <span>🍎 För iPhone/iPad: Tryck</span>
+        <span class="px-1.5 py-0.5 bg-slate-800 rounded border border-slate-700 font-mono">Dela ⎋</span>
+        <span>→ <strong>"Lägg till på hemskärmen"</strong></span>
+      </div>
+    </div>
+
+    <!-- Header Banner -->
+    <header class="glass-card rounded-3xl p-6 md:p-8 shadow-2xl relative overflow-hidden">
+      <div class="absolute -right-10 -top-10 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -left-10 -bottom-10 w-48 h-48 bg-rose-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 relative z-10">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-950/60 border border-rose-700/50 text-rose-300 text-xs font-semibold uppercase tracking-wider mb-2">
+            <span>🎉</span> 52 VECKOR • 15 OKT 2026 – 15 OKT 2027
+          </div>
+          <h1 class="text-3xl md:text-4xl font-black tracking-tight text-white flex items-center gap-3">
+            Irenes Muckarkam 🪮
+          </h1>
+          <p class="text-slate-400 text-sm md:text-base mt-1">
+            En tand för varje avverkad vecka! Frihetsmål: <span class="font-bold text-slate-200">15 oktober 2027</span>
+          </p>
+        </div>
+
+        <!-- Clock & sharp status badge -->
+        <div class="flex items-center gap-3 bg-slate-900/80 px-4 py-2.5 rounded-2xl border border-slate-800 shadow-sm self-start md:self-auto">
+          <div id="modeStatusDot" class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></div>
+          <div>
+            <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold" id="clockHeaderLabel">REALTID (SKARPT LÄGE)</div>
+            <div id="liveClock" class="text-xs font-mono font-bold text-slate-200">--:--:--</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pre-start banner (shown if today is before 15 Oct 2026 in real-time) -->
+      <div id="preStartBanner" class="mt-4 p-3.5 bg-amber-950/40 border border-amber-700/40 rounded-2xl flex items-center gap-3 text-xs text-amber-200">
+        <span class="text-2xl">⏳</span>
+        <div>
+          <strong class="font-bold">Uppladdning inför sista året!</strong>
+          <span id="daysToStartText"> Nedräkningen startar den 15 oktober 2026.</span>
+          Alla ändringar du gör synkas direkt mellan iPhone, iPad och PC via din databas.
+        </div>
+      </div>
+    </header>
+
+    <!-- The 52-Week Digital Comb (Centerpiece!) -->
+    <div class="glass-card rounded-3xl p-6 md:p-8 shadow-2xl space-y-4">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-slate-700/80 pb-3">
+        <div>
+          <h2 class="text-xl font-black text-white flex items-center gap-2">
+            <span>🪮</span> Den 52-Tandade Muckarkammen
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">
+            Varje tand motsvarar 1 arbetsvecka. <strong>Låses upp på fredagar kl 17:00</strong> när veckan är klar.
+          </p>
+        </div>
+
+        <!-- Legend / Status -->
+        <div class="flex items-center gap-3 text-[11px] font-medium text-slate-300">
+          <span class="inline-flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-sm animate-pulse"></span> Redo att brytas!
+          </span>
+          <span class="inline-flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-slate-600"></span> Bruten
+          </span>
+          <span class="inline-flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-stone-800 border border-stone-600"></span> Låst (framtid)
+          </span>
+        </div>
+      </div>
+
+      <!-- Quick Comb Stat Summary -->
+      <div class="grid grid-cols-3 gap-3 text-center py-1">
+        <div class="p-3 bg-amber-950/30 rounded-2xl border border-amber-800/40">
+          <div class="text-[10px] uppercase font-bold text-amber-300">Veckor brutna</div>
+          <div id="statBrokenWeeks" class="text-2xl font-black text-amber-400">0</div>
+        </div>
+        <div class="p-3 bg-emerald-950/30 rounded-2xl border border-emerald-800/40">
+          <div class="text-[10px] uppercase font-bold text-emerald-300">Redo att knäcka nu</div>
+          <div id="statReadyWeeks" class="text-2xl font-black text-emerald-400">0</div>
+        </div>
+        <div class="p-3 bg-rose-950/30 rounded-2xl border border-rose-800/40">
+          <div class="text-[10px] uppercase font-bold text-rose-300">Veckor kvar att jobba</div>
+          <div id="statWeeksLeft" class="text-2xl font-black text-rose-400">52</div>
+        </div>
+      </div>
+
+      <!-- Comb Graphic Box -->
+      <div class="p-4 md:p-6 bg-gradient-to-b from-stone-900 to-amber-950 rounded-2xl shadow-2xl overflow-hidden border border-amber-800/30">
+        <!-- Spine of comb -->
+        <div class="h-10 bg-gradient-to-r from-amber-700 via-yellow-600 to-amber-800 rounded-t-xl border-b-2 border-amber-950 flex items-center px-4 justify-between shadow-lg">
+          <span class="text-xs font-black tracking-widest text-amber-100 uppercase font-mono flex items-center gap-2">
+            <span>★</span> IRENE • 52 VECKORS MUCKARKAM 2026-2027 <span>★</span>
+          </span>
+          <span class="text-[11px] font-bold text-amber-200/90 font-mono tracking-wider">PENSION 15 OKT 2027</span>
+        </div>
+
+        <!-- 52 Teeth Scroll/Grid Area -->
+        <div id="combTeethContainer" class="flex gap-1 pt-1.5 overflow-x-auto custom-scrollbar pb-3 min-h-[125px] items-start select-none">
+          <!-- 52 teeth will be generated here -->
+        </div>
+
+        <div class="flex items-center justify-between text-[10px] text-amber-300/70 font-mono pt-1">
+          <span>← V. 1 (15 Okt 2026)</span>
+          <span class="text-center italic text-amber-200/90 font-sans">Dra eller scrolla för att se alla 52 veckor</span>
+          <span>V. 52 (15 Okt 2027) MUCK! →</span>
+        </div>
+      </div>
+
+      <!-- Action & Test Controls Bar -->
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2 bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
+        
+        <!-- Left: The REAL Friday Button vs TEST Button -->
+        <div class="flex flex-wrap items-center gap-2.5">
+          <!-- The REAL Button -->
+          <button id="breakNextReadyBtn" class="px-5 py-3 rounded-xl bg-slate-800 border border-slate-700 text-slate-400 font-bold text-sm flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed transition">
+            <span>🔒</span> Knäck förverkad vecka (Skarpt)
+          </button>
+
+          <!-- TEST Button -->
+          <button id="testBreakBtn" class="px-4 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-600 hover:to-rose-600 text-white font-bold shadow-md shadow-rose-500/20 active:scale-95 transition flex items-center gap-1.5 text-xs">
+            <span>🧪</span> Provknäck en tand (Test)
+          </button>
+        </div>
+
+        <!-- Right: Free-click toggle & Reset -->
+        <div class="flex items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-800">
+          <label class="flex items-center gap-2 cursor-pointer select-none text-xs font-medium text-slate-300 hover:text-white transition">
+            <input type="checkbox" id="freeClickToggle" class="w-4 h-4 rounded accent-amber-500 cursor-pointer">
+            <span>Fri knäckning i kammen</span>
+          </label>
+
+          <button id="resetTeethBtn" class="px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white text-xs font-semibold transition">
+            Återställ kammen
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Muckarloggen / Historik-Tidslinje -->
+    <div class="glass-card rounded-3xl p-6 md:p-8 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between flex-wrap gap-2 border-b border-slate-700/80 pb-3">
+        <div>
+          <h2 class="text-xl font-black text-white flex items-center gap-2">
+            <span>📖</span> Irenes Muckarlogg & Historik
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">
+            Sparat i molndatabasen med exakt datum, klockslag och kommentar!
+          </p>
+        </div>
+        <button id="clearLogBtn" class="text-xs text-slate-500 hover:text-rose-400 transition">
+          Rensa loggen
+        </button>
+      </div>
+
+      <!-- History entries container -->
+      <div id="historyLogContainer" class="space-y-2.5 max-h-72 overflow-y-auto custom-scrollbar pr-1">
+        <!-- Dynamically rendered -->
+      </div>
+    </div>
+
+    <!-- Main Stats Row -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      
+      <!-- Workdays remaining -->
+      <div class="glass-card rounded-2xl p-5 shadow-lg flex items-center gap-4">
+        <div class="w-12 h-12 rounded-2xl bg-rose-900/40 text-rose-400 flex items-center justify-center text-2xl font-bold">
+          💼
+        </div>
+        <div>
+          <span class="text-xs font-semibold text-slate-400 uppercase">Arbetsdagar kvar</span>
+          <div id="statWorkdays" class="text-2xl font-extrabold text-white">--</div>
+          <span class="text-[11px] text-slate-400">Exklusive helger & röda dagar</span>
+        </div>
+      </div>
+
+      <!-- Monday Counter -->
+      <div class="glass-card rounded-2xl p-5 shadow-lg flex items-center gap-4">
+        <div class="w-12 h-12 rounded-2xl bg-indigo-900/40 text-indigo-400 flex items-center justify-center text-2xl font-bold">
+          📅
+        </div>
+        <div>
+          <span class="text-xs font-semibold text-slate-400 uppercase">Måndagar kvar</span>
+          <div id="statMondays" class="text-2xl font-extrabold text-white">--</div>
+          <span class="text-[11px] text-slate-400">Bara måndagarna att bocka av!</span>
+        </div>
+      </div>
+
+      <!-- Coffee Cups Left -->
+      <div class="glass-card rounded-2xl p-5 shadow-lg flex items-center gap-4">
+        <div class="w-12 h-12 rounded-2xl bg-amber-900/40 text-amber-400 flex items-center justify-center text-2xl font-bold">
+          ☕
+        </div>
+        <div>
+          <span class="text-xs font-semibold text-slate-400 uppercase">Kaffekoppar kvar</span>
+          <div id="statCoffee" class="text-2xl font-extrabold text-white">--</div>
+          <span class="text-[11px] text-slate-400">Räknat på 2 koppar/arbetsdag</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Vacation Slider -->
+    <div class="glass-card rounded-3xl p-6 shadow-xl space-y-3">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="font-bold text-white flex items-center gap-2">
+            <span>✈️</span> Semester & Kompdagar att dra av sista året
+          </h3>
+          <p class="text-xs text-slate-400">
+            Dra i reglaget för att minska arbetsdagarna ytterligare!
+          </p>
+        </div>
+        <div class="px-3 py-1.5 bg-rose-950/60 border border-rose-800 text-rose-300 font-bold rounded-xl text-sm font-mono" id="vacationDisplay">
+          25 dagar
+        </div>
+      </div>
+
+      <input type="range" id="vacationSlider" min="0" max="50" value="25" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-rose-500">
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center text-xs text-slate-500 py-4 space-y-1">
+      <p>Byggd med kärlek för Irene • 15 oktober 2026 till 15 oktober 2027</p>
+      <p class="text-[11px]">Synkad via Supabase PostgreSQL Cloud med Realtime live-feed.</p>
+    </footer>
+
+  </div>
+
+  <!-- Note Input Modal (appears when a tooth is broken!) -->
+  <div id="noteModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="bg-slate-900 border border-amber-600/40 rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl transform scale-95 transition-transform duration-300" id="noteModalBox">
+      <div class="text-center space-y-1">
+        <div class="text-4xl">🎉 ✂️</div>
+        <h3 class="text-xl font-black text-white" id="modalWeekTitle">Vecka X avklarad!</h3>
+        <p class="text-xs text-slate-400">Ett steg närmare friheten! Vill du spara en notis i Muckarloggen?</p>
+      </div>
+
+      <div class="space-y-2">
+        <div class="flex gap-2 justify-center py-1">
+          <button type="button" class="emoji-pick text-xl p-2 rounded-xl bg-slate-800 hover:bg-slate-700 ring-2 ring-amber-400">🎉</button>
+          <button type="button" class="emoji-pick text-xl p-2 rounded-xl bg-slate-800 hover:bg-slate-700">🥂</button>
+          <button type="button" class="emoji-pick text-xl p-2 rounded-xl bg-slate-800 hover:bg-slate-700">🏖️</button>
+          <button type="button" class="emoji-pick text-xl p-2 rounded-xl bg-slate-800 hover:bg-slate-700">☕</button>
+          <button type="button" class="emoji-pick text-xl p-2 rounded-xl bg-slate-800 hover:bg-slate-700">🍰</button>
+        </div>
+        <input type="text" id="noteInput" placeholder="T.ex. Helg! Firar med tårta på jobbet..." class="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-amber-500">
+      </div>
+
+      <div class="flex gap-2">
+        <button id="saveNoteBtn" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-600 hover:to-rose-600 text-white font-bold text-sm shadow-md transition">
+          Spara i loggboken ✨
+        </button>
+        <button id="skipNoteBtn" class="px-4 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 text-sm font-semibold transition">
+          Hoppa över
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // SUPABASE CONFIGURATION
+    const SUPABASE_URL = "https://tcxhqqaldldodcdxmvut.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_DUJZBhEA4duwZ2Dta3sjRg_VGAoKa_B";
+    const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+
+    // Audio synthesizer for "crack/snap" sound
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playCombSnapSound() {
+      try {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(480, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(110, audioCtx.currentTime + 0.14);
+        gain.gain.setValueAtTime(0.35, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.14);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.14);
+      } catch (e) {}
+    }
+
+    function playLockSound() {
+      try {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(220, audioCtx.currentTime);
+        osc.frequency.setValueAtTime(180, audioCtx.currentTime + 0.08);
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.16);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.16);
+      } catch (e) {}
+    }
+
+    // Swedish Red Days on weekdays for 15 Oct 2026 to 15 Oct 2027
+    const swedishHolidays = new Set([
+      "2026-12-24", "2026-12-25", "2026-12-31",
+      "2027-01-01", "2027-01-06", "2027-03-26", "2027-03-29", 
+      "2027-05-06", "2027-06-25"
+    ]);
+
+    const START_DATE = new Date("2026-10-15T00:00:00");
+    const END_DATE = new Date("2027-10-15T00:00:00");
+    const TOTAL_WEEKS = 52;
+
+    // Weeks generator
+    const weeks = [];
+    let curWeekStart = new Date(START_DATE);
+    for (let i = 1; i <= TOTAL_WEEKS; i++) {
+      const wStart = new Date(curWeekStart);
+      const wEnd = new Date(curWeekStart);
+      wEnd.setDate(wEnd.getDate() + 7);
+      weeks.push({
+        weekNum: i,
+        startDate: wStart,
+        endDate: wEnd,
+        label: `Vecka ${i} (${wStart.toLocaleDateString('sv-SE', {day: 'numeric', month: 'short'})} – ${wEnd.toLocaleDateString('sv-SE', {day: 'numeric', month: 'short'})})`
+      });
+      curWeekStart.setDate(curWeekStart.getDate() + 7);
+    }
+
+    // State
+    let brokenWeeks = new Set();
+    let historyLog = [];
+    let vacationDays = 25;
+    let allowFreeClicking = false;
+    let pendingBreakWeek = null;
+    let selectedEmoji = "🎉";
+
+    function showToast(msg, icon = "🔒") {
+      const toast = document.getElementById("toast");
+      document.getElementById("toastMsg").innerText = msg;
+      document.getElementById("toastIcon").innerText = icon;
+      toast.classList.remove("opacity-0", "translate-y-4", "pointer-events-none");
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => {
+        toast.classList.add("opacity-0", "translate-y-4", "pointer-events-none");
+      }, 2600);
+    }
+
+    // SUPABASE DB SYNC
+    async function loadFromSupabase() {
+      try {
+        if (!supabaseClient) return;
+        const { data, error } = await supabaseClient
+          .from('muckarkam')
+          .select('*')
+          .eq('id', 'irene')
+          .single();
+
+        if (data) {
+          brokenWeeks = new Set(data.broken_weeks || []);
+          historyLog = data.history_log || [];
+          vacationDays = data.vacation_days ?? 25;
+          renderTeeth();
+          renderHistory();
+          updateMetrics();
+        }
+      } catch (err) {
+        console.error("Supabase load error:", err);
+      }
+    }
+
+    async function saveToSupabase() {
+      try {
+        if (!supabaseClient) return;
+        await supabaseClient
+          .from('muckarkam')
+          .update({
+            broken_weeks: Array.from(brokenWeeks),
+            history_log: historyLog,
+            vacation_days: vacationDays,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', 'irene');
+      } catch (err) {
+        console.error("Supabase save error:", err);
+      }
+    }
+
+    // SUPABASE REALTIME SUBSCRIPTION
+    function subscribeToRealtime() {
+      if (!supabaseClient) return;
+      supabaseClient
+        .channel('public:muckarkam')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'muckarkam' }, (payload) => {
+          if (payload.new && payload.new.id === 'irene') {
+            brokenWeeks = new Set(payload.new.broken_weeks || []);
+            historyLog = payload.new.history_log || [];
+            vacationDays = payload.new.vacation_days ?? 25;
+            renderTeeth();
+            renderHistory();
+            updateMetrics();
+            showToast("Synkad med molnet! 🔄", "⚡");
+          }
+        })
+        .subscribe((status) => {
+          const dot = document.getElementById("dbStatusDot");
+          const text = document.getElementById("dbStatusText");
+          if (status === 'SUBSCRIBED') {
+            dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse";
+            text.className = "font-medium text-emerald-400";
+            text.innerText = "Ansluten till Supabase Cloud (Live Realtime)";
+          }
+        });
+    }
+
+    function calculateWorkdays(fromDate, toDate) {
+      let count = 0;
+      let mondays = 0;
+      let cur = new Date(fromDate);
+      cur.setHours(0,0,0,0);
+      const end = new Date(toDate);
+      end.setHours(0,0,0,0);
+
+      while (cur < end) {
+        const dayOfWeek = cur.getDay();
+        const iso = cur.toISOString().split('T')[0];
+        if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+          if (!swedishHolidays.has(iso)) {
+            count++;
+            if (dayOfWeek === 1) mondays++;
+          }
+        }
+        cur.setDate(cur.getDate() + 1);
+      }
+      return { count, mondays };
+    }
+
+    function renderTeeth() {
+      const container = document.getElementById("combTeethContainer");
+      container.innerHTML = "";
+      const now = new Date();
+
+      let readyCount = 0;
+      let brokenCount = brokenWeeks.size;
+
+      weeks.forEach((w) => {
+        const isPastInReality = now >= w.endDate; 
+        const isCurrentInReality = now >= w.startDate && now < w.endDate;
+        const isBroken = brokenWeeks.has(w.weekNum);
+
+        const toothWrapper = document.createElement("div");
+        toothWrapper.className = "flex flex-col items-center flex-shrink-0 group relative";
+
+        const tooth = document.createElement("div");
+        tooth.id = `tooth-${w.weekNum}`;
+
+        if (isBroken) {
+          // ALREADY BROKEN (Stub)
+          tooth.className = "w-2.5 md:w-3 h-5 md:h-6 bg-amber-950/60 border-t-2 border-stone-800 rounded-b-sm cursor-default opacity-40 shadow-inner";
+          tooth.title = `${w.label} - Redan avverkad och bruten! ✂️`;
+        } else if (isPastInReality) {
+          // COMPLETED IN REALITY: READY TO BREAK
+          readyCount++;
+          tooth.className = "w-2.5 md:w-3 h-16 md:h-20 bg-gradient-to-b from-yellow-300 via-amber-400 to-amber-500 rounded-b cursor-pointer transition transform hover:-translate-y-1.5 hover:brightness-125 shadow-lg ring-2 ring-yellow-400/80 animate-pulse";
+          tooth.title = `${w.label} - Veckan är avklarad! Klicka för att bryta tanden! ✨`;
+
+          tooth.addEventListener("click", () => {
+            promptBreakTooth(w.weekNum, tooth);
+          });
+        } else if (allowFreeClicking) {
+          // FREE CLICK TEST MODE
+          tooth.className = "w-2.5 md:w-3 h-16 md:h-20 bg-gradient-to-b from-amber-400 to-amber-600 rounded-b cursor-pointer hover:-translate-y-1 hover:brightness-125 shadow transition ring-1 ring-amber-400/50";
+          tooth.title = `${w.label} - Testläge aktivt: Klicka för att provknäcka! 🧪`;
+
+          tooth.addEventListener("click", () => {
+            promptBreakTooth(w.weekNum, tooth);
+          });
+        } else if (isCurrentInReality) {
+          // CURRENT WEEK (in progress)
+          tooth.className = "w-2.5 md:w-3 h-16 md:h-20 bg-gradient-to-b from-amber-600 via-amber-700 to-amber-800 rounded-b cursor-pointer opacity-85 shadow border border-amber-500/40";
+          tooth.title = `${w.label} - Pågår just nu! Kan brytas på fredag kl 17:00.`;
+
+          tooth.addEventListener("click", () => {
+            playLockSound();
+            tooth.classList.add("tooth-locked-wiggle");
+            setTimeout(() => tooth.classList.remove("tooth-locked-wiggle"), 400);
+            showToast(`Vecka ${w.weekNum} pågår just nu! Jobba klart veckan innan du bryter den! 💪`, "⏳");
+          });
+        } else {
+          // FUTURE LOCKED TOOTH
+          tooth.className = "w-2.5 md:w-3 h-16 md:h-20 bg-gradient-to-b from-stone-800 via-stone-900 to-amber-950 rounded-b cursor-pointer opacity-50 hover:opacity-75 transition";
+          tooth.title = `${w.label} - Framtida vecka. Låst!`;
+
+          tooth.addEventListener("click", () => {
+            playLockSound();
+            tooth.classList.add("tooth-locked-wiggle");
+            setTimeout(() => tooth.classList.remove("tooth-locked-wiggle"), 400);
+            showToast(`Tålamod Irene! Vecka ${w.weekNum} har inte passerat än! 🔒`, "🔒");
+          });
+        }
+
+        // Label underneath
+        const label = document.createElement("span");
+        label.className = "text-[8px] font-mono text-amber-200/50 mt-1 select-none";
+        label.innerText = w.weekNum % 5 === 0 || w.weekNum === 1 || w.weekNum === 52 ? w.weekNum : "•";
+
+        toothWrapper.appendChild(tooth);
+        toothWrapper.appendChild(label);
+        container.appendChild(toothWrapper);
+      });
+
+      // Update counters
+      document.getElementById("statBrokenWeeks").innerText = brokenCount;
+      document.getElementById("statReadyWeeks").innerText = readyCount;
+      document.getElementById("statWeeksLeft").innerText = Math.max(0, TOTAL_WEEKS - brokenCount);
+
+      // Real-time button
+      const nextBtn = document.getElementById("breakNextReadyBtn");
+      nextBtn.disabled = readyCount === 0;
+      if (readyCount > 0) {
+        nextBtn.className = "px-5 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-600 hover:to-rose-600 text-white font-black shadow-lg shadow-rose-500/25 active:scale-95 transition flex items-center gap-2 text-sm animate-bounce";
+        nextBtn.innerHTML = `<span>🎉</span> Knäck Vecka (${readyCount} redo!)`;
+      } else {
+        nextBtn.className = "px-5 py-3 rounded-xl bg-slate-800 border border-slate-700 text-slate-400 font-bold text-sm flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed transition";
+        nextBtn.innerHTML = `<span>🔒</span> Inga veckor redo än (Skarpt)`;
+      }
+
+      updateMetrics();
+    }
+
+    function renderHistory() {
+      const container = document.getElementById("historyLogContainer");
+      container.innerHTML = "";
+
+      if (historyLog.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-6 text-slate-500 text-xs italic">
+            Inga knäckta veckor loggade än. När en tand knäcks sparas datum och minnesanteckning här!
+          </div>
+        `;
+        return;
+      }
+
+      const sorted = [...historyLog].reverse();
+      sorted.forEach((item) => {
+        const row = document.createElement("div");
+        row.className = "p-3 bg-slate-800/60 rounded-2xl border border-slate-700/60 flex items-center justify-between gap-3 text-xs";
+        
+        row.innerHTML = `
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">${item.emoji || "✂️"}</span>
+            <div>
+              <div class="font-bold text-white flex items-center gap-2">
+                <span>Vecka ${item.weekNum} avklarad!</span>
+                <span class="text-[10px] text-amber-400 font-mono bg-amber-950/60 px-2 py-0.5 rounded-full border border-amber-800/40">Bruten</span>
+              </div>
+              <div class="text-slate-400 text-[11px] mt-0.5">
+                ${item.note ? `"${item.note}" • ` : ""}${item.dateStr}
+              </div>
+            </div>
+          </div>
+          <span class="text-[11px] font-mono text-slate-400">${item.timeStr || ""}</span>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function promptBreakTooth(weekNum, element) {
+      if (brokenWeeks.has(weekNum)) return;
+      pendingBreakWeek = { weekNum, element };
+      document.getElementById("modalWeekTitle").innerText = `Vecka ${weekNum} avklarad!`;
+      document.getElementById("noteInput").value = "";
+      
+      const modal = document.getElementById("noteModal");
+      const box = document.getElementById("noteModalBox");
+      modal.classList.remove("opacity-0", "pointer-events-none");
+      box.classList.remove("scale-95");
+      box.classList.add("scale-100");
+    }
+
+    function executeBreak(note = "", emoji = "🎉") {
+      if (!pendingBreakWeek) return;
+      const { weekNum, element } = pendingBreakWeek;
+      pendingBreakWeek = null;
+
+      const modal = document.getElementById("noteModal");
+      const box = document.getElementById("noteModalBox");
+      modal.classList.add("opacity-0", "pointer-events-none");
+      box.classList.remove("scale-100");
+      box.classList.add("scale-95");
+
+      playCombSnapSound();
+      launchConfetti();
+      if (element) element.classList.add("tooth-breaking");
+
+      setTimeout(() => {
+        brokenWeeks.add(weekNum);
+        
+        const now = new Date();
+        historyLog.push({
+          weekNum,
+          dateStr: now.toLocaleDateString('sv-SE', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }),
+          timeStr: now.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' }),
+          note: note.trim(),
+          emoji: emoji
+        });
+
+        saveToSupabase();
+        showToast(`Vecka ${weekNum} är knäckt och sparad i molnet! 🎉`, "✂️");
+        renderTeeth();
+        renderHistory();
+      }, 550);
+    }
+
+    document.getElementById("saveNoteBtn").addEventListener("click", () => {
+      const note = document.getElementById("noteInput").value;
+      executeBreak(note, selectedEmoji);
+    });
+    document.getElementById("skipNoteBtn").addEventListener("click", () => {
+      executeBreak("", "✂️");
+    });
+
+    document.querySelectorAll(".emoji-pick").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".emoji-pick").forEach(b => b.classList.remove("ring-2", "ring-amber-400"));
+        btn.classList.add("ring-2", "ring-amber-400");
+        selectedEmoji = btn.innerText;
+      });
+    });
+
+    function updateMetrics() {
+      const now = new Date();
+      const isBeforeStart = now < START_DATE;
+      const calcStartDate = isBeforeStart ? START_DATE : (now > END_DATE ? END_DATE : now);
+
+      const remainingStats = calculateWorkdays(calcStartDate, END_DATE);
+      const netWorkdays = Math.max(0, remainingStats.count - vacationDays);
+
+      document.getElementById("statWorkdays").innerText = netWorkdays;
+      document.getElementById("statMondays").innerText = remainingStats.mondays;
+      document.getElementById("statCoffee").innerText = netWorkdays * 2;
+      document.getElementById("vacationDisplay").innerText = vacationDays + " dagar";
+      document.getElementById("vacationSlider").value = vacationDays;
+
+      const preBanner = document.getElementById("preStartBanner");
+      if (isBeforeStart) {
+        preBanner.classList.remove("hidden");
+        const daysTo = Math.ceil((START_DATE - now) / (1000 * 60 * 60 * 24));
+        document.getElementById("daysToStartText").innerText = ` Det är ${daysTo} dagar kvar till start (15 oktober 2026).`;
+      } else {
+        preBanner.classList.add("hidden");
+      }
+    }
+
+    document.getElementById("breakNextReadyBtn").addEventListener("click", () => {
+      const now = new Date();
+      const nextReadyWeek = weeks.find(w => now >= w.endDate && !brokenWeeks.has(w.weekNum));
+      if (nextReadyWeek) {
+        const el = document.getElementById(`tooth-${nextReadyWeek.weekNum}`);
+        promptBreakTooth(nextReadyWeek.weekNum, el);
+      }
+    });
+
+    // Test Break button
+    document.getElementById("testBreakBtn").addEventListener("click", () => {
+      const nextUnbrokenWeek = weeks.find(w => !brokenWeeks.has(w.weekNum));
+      if (nextUnbrokenWeek) {
+        const el = document.getElementById(`tooth-${nextUnbrokenWeek.weekNum}`);
+        promptBreakTooth(nextUnbrokenWeek.weekNum, el);
+      } else {
+        showToast("Alla 52 tänder är redan brutna! Klicka på Återställ för att börja om.", "🎉");
+      }
+    });
+
+    // Free click toggle
+    const freeToggle = document.getElementById("freeClickToggle");
+    freeToggle.addEventListener("change", (e) => {
+      allowFreeClicking = e.target.checked;
+      const modeDot = document.getElementById("modeStatusDot");
+      const modeLabel = document.getElementById("clockHeaderLabel");
+      if (allowFreeClicking) {
+        modeDot.className = "w-3 h-3 rounded-full bg-amber-400 animate-ping";
+        modeLabel.innerText = "TESTLÄGE: FRI KNÄCKNING PÅ";
+        modeLabel.classList.add("text-amber-400");
+        showToast("Fri knäckning aktiv! Klicka fritt på valfri tand i kammen!", "🧪");
+      } else {
+        modeDot.className = "w-3 h-3 rounded-full bg-emerald-500 animate-pulse";
+        modeLabel.innerText = "REALTID (SKARPT LÄGE)";
+        modeLabel.classList.remove("text-amber-400");
+        showToast("Skarpt läge aktiverat igen.", "🔒");
+      }
+      renderTeeth();
+    });
+
+    // Reset button
+    document.getElementById("resetTeethBtn").addEventListener("click", () => {
+      if (confirm("Vill du återställa kammen till 52 intakta tänder i molnet?")) {
+        brokenWeeks.clear();
+        saveToSupabase();
+        showToast("Kammen har återställts i molnet!", "🔄");
+        renderTeeth();
+      }
+    });
+
+    // Clear history
+    document.getElementById("clearLogBtn").addEventListener("click", () => {
+      if (confirm("Vill du rensa historikloggen i molnet?")) {
+        historyLog = [];
+        saveToSupabase();
+        renderHistory();
+      }
+    });
+
+    // Vacation slider
+    document.getElementById("vacationSlider").addEventListener("input", (e) => {
+      vacationDays = parseInt(e.target.value, 10);
+      saveToSupabase();
+      updateMetrics();
+    });
+
+    // Clock
+    setInterval(() => {
+      const now = new Date();
+      document.getElementById("liveClock").innerText = now.toLocaleTimeString('sv-SE');
+    }, 1000);
+    document.getElementById("liveClock").innerText = new Date().toLocaleTimeString('sv-SE');
+
+    // Confetti Engine
+    const canvas = document.getElementById("confettiCanvas");
+    const ctx = canvas.getContext("2d");
+    let particles = [];
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    function launchConfetti() {
+      const colors = ["#f59e0b", "#ef4444", "#ec4899", "#8b5cf6", "#10b981", "#3b82f6", "#eab308"];
+      for (let i = 0; i < 50; i++) {
+        particles.push({
+          x: window.innerWidth / 2 + (Math.random() - 0.5) * 260,
+          y: window.innerHeight / 2 + (Math.random() - 0.5) * 120,
+          vx: (Math.random() - 0.5) * 12,
+          vy: Math.random() * -12 - 5,
+          size: Math.random() * 8 + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rotation: Math.random() * 360,
+          rotSpeed: (Math.random() - 0.5) * 14,
+          opacity: 1
+        });
+      }
+    }
+
+    function animateConfetti() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.38;
+        p.rotation += p.rotSpeed;
+        p.opacity -= 0.015;
+
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate((p.rotation * Math.PI) / 180);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = Math.max(0, p.opacity);
+        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.7);
+        ctx.restore();
+
+        if (p.opacity <= 0 || p.y > canvas.height) {
+          particles.splice(i, 1);
+        }
+      }
+      requestAnimationFrame(animateConfetti);
+    }
+    animateConfetti();
+
+    // Boot: Load from Supabase and listen to live changes!
+    renderTeeth();
+    renderHistory();
+    loadFromSupabase();
+    subscribeToRealtime();
+  </script>
+</body>
+</html>
