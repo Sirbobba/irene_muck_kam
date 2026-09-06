@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <!-- Disable aggressive browser caching -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
@@ -70,7 +69,7 @@
 
   <div class="max-w-4xl mx-auto space-y-5">
     
-    <!-- Top Bar: Mode Switcher & Cloud Status -->
+    <!-- Top Bar: Mode Switcher, Math Button & Cloud Status -->
     <div class="flex flex-wrap items-center justify-between gap-3 px-1 text-xs">
       
       <!-- Mode Toggle Badge -->
@@ -85,10 +84,17 @@
         </button>
       </div>
 
-      <!-- Cloud Status -->
-      <div class="flex items-center gap-2 text-slate-400 text-[11px]">
-        <span id="dbStatusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-        <span id="dbStatusText" class="text-emerald-400 font-medium">Supabase Realtime Live</span>
+      <!-- Right Buttons: Math Proof & Cloud Status -->
+      <div class="flex items-center gap-3">
+        <button id="openMathModalBtn" class="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 font-bold text-xs flex items-center gap-1.5 transition shadow-sm">
+          <span>📐</span>
+          <span>Hur matematiken fungerar</span>
+        </button>
+
+        <div class="hidden sm:flex items-center gap-2 text-slate-400 text-[11px]">
+          <span id="dbStatusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+          <span id="dbStatusText" class="text-emerald-400 font-medium">Supabase Realtime</span>
+        </div>
       </div>
     </div>
 
@@ -136,14 +142,19 @@
         </div>
       </div>
 
-      <!-- Pre-start notice -->
-      <div id="preStartBanner" class="mt-4 p-3.5 bg-amber-950/40 border border-amber-700/40 rounded-2xl flex items-center gap-3 text-xs text-amber-200">
-        <span class="text-2xl">⏳</span>
-        <div>
-          <strong class="font-bold">Uppladdning inför sista året!</strong>
-          <span id="daysToStartText"> Nedräkningen startar den 15 oktober 2026.</span>
-          Alla 52 tänder är intakta och låsta tills respektive vecka avverkats i verkligheten.
+      <!-- Pre-start notice with Math teaser link -->
+      <div id="preStartBanner" class="mt-4 p-3.5 bg-amber-950/40 border border-amber-700/40 rounded-2xl flex items-center justify-between flex-wrap gap-3 text-xs text-amber-200">
+        <div class="flex items-center gap-3">
+          <span class="text-2xl">⏳</span>
+          <div>
+            <strong class="font-bold">Uppladdning inför sista året!</strong>
+            <span id="daysToStartText"> Nedräkningen startar den 15 oktober 2026.</span>
+            Alla 52 tänder är intakta tills respektive vecka avverkats i verkligheten.
+          </div>
         </div>
+        <button id="quickMathBtn" class="underline text-amber-300 hover:text-white font-bold text-[11px]">
+          Hur räknas arbetsdagarna ut? ➔
+        </button>
       </div>
     </header>
 
@@ -162,10 +173,10 @@
         <!-- Legend -->
         <div class="flex items-center gap-3 text-[11px] font-medium text-slate-300">
           <span class="inline-flex items-center gap-1.5">
-            <span class="w-3 h-3 rounded-sm bg-amber-400 shadow-sm border border-yellow-200 animate-pulse"></span> Intakt tand
+            <span class="w-3 h-3 rounded-sm bg-amber-500 shadow-sm border border-amber-300"></span> Intakt tand
           </span>
           <span class="inline-flex items-center gap-1.5">
-            <span class="w-3 h-3 rounded-sm bg-yellow-300 ring-2 ring-yellow-400"></span> Redo att knäckas!
+            <span class="w-3 h-3 rounded-sm bg-yellow-300 ring-2 ring-yellow-400 animate-pulse"></span> Redo att knäckas!
           </span>
           <span class="inline-flex items-center gap-1.5">
             <span class="w-3 h-1.5 rounded-sm bg-stone-700"></span> Avbruten stubbe
@@ -329,7 +340,7 @@
 
     <!-- Footer -->
     <footer class="text-center text-xs text-slate-500 py-4 space-y-1">
-      <p>Byggd för Irene • 15 oktober 2026 till 15 oktober 2027</p>
+      <p>Byggd med kärlek för Irene • 15 oktober 2026 till 15 oktober 2027</p>
       <p class="text-[11px]">Synkad via Supabase PostgreSQL Cloud med Realtime live-feed.</p>
     </footer>
 
@@ -363,6 +374,128 @@
           Hoppa över
         </button>
       </div>
+    </div>
+  </div>
+
+  <!-- MATH & RED DAYS MODAL ("HUR MATEMATIKEN FUNGERAR") -->
+  <div id="mathModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="bg-slate-900 border border-amber-500/50 rounded-3xl max-w-2xl w-full p-6 md:p-8 space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar transform scale-95 transition-transform duration-300" id="mathModalBox">
+      
+      <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div>
+          <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-950/60 border border-amber-600/50 text-amber-300 text-[10px] font-bold uppercase tracking-wider mb-1">
+            Beviset för Irene
+          </div>
+          <h3 class="text-2xl font-black text-white flex items-center gap-2">
+            <span>📐</span> Hur matematiken fungerar
+          </h3>
+        </div>
+        <button id="closeMathModal" class="w-9 h-9 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center text-lg font-bold transition">
+          &times;
+        </button>
+      </div>
+
+      <!-- Formula Breakdown Cards -->
+      <div class="space-y-3">
+        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Steg-för-steg: Från 365 dagar till frihet</h4>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-2.5 text-center text-xs">
+          <div class="p-3 bg-slate-800/70 rounded-2xl border border-slate-700">
+            <div class="text-slate-400 text-[10px] uppercase font-semibold">1. Totalt</div>
+            <div class="text-xl font-black text-white mt-1">365</div>
+            <div class="text-[10px] text-slate-400">kalenderdagar</div>
+          </div>
+          <div class="p-3 bg-rose-950/40 rounded-2xl border border-rose-800/40">
+            <div class="text-rose-300 text-[10px] uppercase font-semibold">2. Helger bort</div>
+            <div class="text-xl font-black text-rose-400 mt-1">- 104</div>
+            <div class="text-[10px] text-rose-300/70">52 lörd + 52 sönd</div>
+          </div>
+          <div class="p-3 bg-amber-950/40 rounded-2xl border border-amber-800/40">
+            <div class="text-amber-300 text-[10px] uppercase font-semibold">3. Röda dagar</div>
+            <div class="text-xl font-black text-amber-400 mt-1">- 9</div>
+            <div class="text-[10px] text-amber-300/70">på vardagar</div>
+          </div>
+          <div class="p-3 bg-emerald-950/40 rounded-2xl border border-emerald-800/40">
+            <div class="text-emerald-300 text-[10px] uppercase font-semibold">4. Före semester</div>
+            <div class="text-xl font-black text-emerald-400 mt-1">= 252</div>
+            <div class="text-[10px] text-emerald-300/70">arbetsdagar kvar!</div>
+          </div>
+        </div>
+
+        <div class="p-4 bg-gradient-to-r from-emerald-950/60 to-teal-950/60 border border-emerald-500/40 rounded-2xl flex items-center justify-between gap-4">
+          <div>
+            <div class="text-xs font-bold text-emerald-300">Med dina 25 semesterdagar avdragna:</div>
+            <div class="text-[11px] text-slate-300 mt-0.5">252 arbetsdagar minus 25 semesterdagar =</div>
+          </div>
+          <div class="text-3xl font-black text-emerald-400 font-mono">
+            227 dagar!
+          </div>
+        </div>
+      </div>
+
+      <!-- Complete List of All Swedish Red Days -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">
+            Alla 9 svenska röda dagar & helgdagsaftnar (på vardagar)
+          </h4>
+          <span class="text-[10px] text-amber-300/80 font-mono">15 okt 2026 – 15 okt 2027</span>
+        </div>
+
+        <div class="space-y-2 text-xs">
+          <!-- 2026 -->
+          <div class="text-[10px] font-bold text-amber-400/80 uppercase tracking-widest pt-1">År 2026:</div>
+          <div class="p-2.5 bg-slate-800/70 rounded-xl border border-slate-700/70 flex items-center justify-between">
+            <span class="flex items-center gap-2"><span>🎄</span> <strong>Julafton</strong></span>
+            <span class="font-mono text-slate-300">Torsdag 24 december 2026</span>
+          </div>
+          <div class="p-2.5 bg-slate-800/70 rounded-xl border border-slate-700/70 flex items-center justify-between">
+            <span class="flex items-center gap-2"><span>🎅</span> <strong>Juldagen</strong></span>
+            <span class="font-mono text-slate-300">Fredag 25 december 2026</span>
+          </div>
+          <div class="p-2.5 bg-slate-800/70 rounded-xl border border-slate-700/70 flex items-center justify-between">
+            <span class="flex items-center gap-2"><span>🥂</span> <strong>Nyårsafton</strong></span>
+            <span class="font-mono text-slate-300">Torsdag 31 december 2026</span>
+          </div>
+
+          <!-- 2027 -->
+          <div class="text-[10px] font-bold text-amber-400/80 uppercase tracking-widest pt-2">År 2027:</div>
+          <div class="p-2.5 bg-slate-800/70 rounded-xl border border-slate-700/70 flex items-center justify-between">
+            <span class="flex items-center gap-2"><span>🎆</span> <strong>Nyårsdagen</strong></span>
+            <span class="font-mono text-slate-300">Fredag 1 januari 2027</span>
+          </div>
+          <div class="p-2.5 bg-slate-800/70 rounded-xl border border-slate-700/70 flex items-center justify-between">
+            <span class="flex items-center gap-2"><span>👑</span> <strong>Trettondedag jul</strong></span>
+            <span class="font-mono text-slate-300">Onsdag 6 januari 2027</span>
+          </div>
+          <div class="p-2.5 bg-slate-800/70 rounded-xl border border-slate-700/70 flex items-center justify-between">
+            <span class="flex items-center gap-2"><span>🐣</span> <strong>Långfredagen</strong></span>
+            <span class="font-mono text-slate-300">Fredag 26 mars 2027</span>
+          </div>
+          <div class="p-2.5 bg-slate-800/70 rounded-xl border border-slate-700/70 flex items-center justify-between">
+            <span class="flex items-center gap-2"><span>🐣</span> <strong>Annandag påsk</strong></span>
+            <span class="font-mono text-slate-300">Måndag 29 mars 2027</span>
+          </div>
+          <div class="p-2.5 bg-slate-800/70 rounded-xl border border-slate-700/70 flex items-center justify-between">
+            <span class="flex items-center gap-2"><span>🕊️</span> <strong>Kristi himmelsfärdsdag</strong></span>
+            <span class="font-mono text-slate-300">Torsdag 6 maj 2027</span>
+          </div>
+          <div class="p-2.5 bg-slate-800/70 rounded-xl border border-slate-700/70 flex items-center justify-between">
+            <span class="flex items-center gap-2"><span>🌸</span> <strong>Midsommarafton</strong></span>
+            <span class="font-mono text-slate-300">Fredag 25 juni 2027</span>
+          </div>
+        </div>
+
+        <!-- Note about weekend holidays -->
+        <div class="p-3 bg-slate-800/40 rounded-xl border border-slate-700/40 text-[11px] text-slate-400">
+          <strong class="text-slate-300">Obs:</strong> Första maj 2027 infaller på en lördag och Nationaldagen 6 juni 2027 infaller på en söndag. De är därför redan inräknade som vanliga helgdagar i steg 2.
+        </div>
+      </div>
+
+      <button id="closeMathModalBottom" class="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-sm shadow transition">
+        Matematiken stämmer, Irene! Ta mig tillbaka ➔
+      </button>
+
     </div>
   </div>
 
@@ -541,7 +674,6 @@
       return { count, mondays };
     }
 
-    // INLINE STYLING GUARANTEES HIGH CONTRAST & VISIBILITY!
     function renderTeeth() {
       const container = document.getElementById("combTeethContainer");
       container.innerHTML = "";
@@ -815,6 +947,25 @@
     testBtn.addEventListener("click", () => setMode('test'));
     exitTestBtn.addEventListener("click", () => setMode('sharp'));
 
+    // MATH MODAL CONTROLS
+    const mathModal = document.getElementById("mathModal");
+    const mathBox = document.getElementById("mathModalBox");
+    function openMathModal() {
+      mathModal.classList.remove("opacity-0", "pointer-events-none");
+      mathBox.classList.remove("scale-95");
+      mathBox.classList.add("scale-100");
+    }
+    function closeMathModal() {
+      mathModal.classList.add("opacity-0", "pointer-events-none");
+      mathBox.classList.remove("scale-100");
+      mathBox.classList.add("scale-95");
+    }
+    document.getElementById("openMathModalBtn").addEventListener("click", openMathModal);
+    document.getElementById("quickMathBtn").addEventListener("click", openMathModal);
+    document.getElementById("closeMathModal").addEventListener("click", closeMathModal);
+    document.getElementById("closeMathModalBottom").addEventListener("click", closeMathModal);
+
+    // TEST BUTTONS
     document.getElementById("testBreakBtn").addEventListener("click", () => {
       const nextUnbrokenWeek = weeks.find(w => !brokenWeeks.has(w.weekNum));
       if (nextUnbrokenWeek) {
