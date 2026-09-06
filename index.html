@@ -11,17 +11,35 @@
   
   <!-- Apple iOS / iPadOS PWA Support -->
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Irene Muck">
-  <meta name="theme-color" content="#020617">
+  <meta name="theme-color" content="#faf8f5">
   
   <!-- Inline Apple Touch Icon -->
-  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230f172a'/><path d='M20 30 h60 v15 h-60 z' fill='%23f59e0b'/><path d='M25 45 v30 M33 45 v30 M41 45 v30 M49 45 v30 M57 45 v30 M65 45 v30 M73 45 v30' stroke='%23fbbf24' stroke-width='4' stroke-linecap='round'/></svg>">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23f59e0b'/><path d='M20 30 h60 v15 h-60 z' fill='%23b45309'/><path d='M25 45 v30 M33 45 v30 M41 45 v30 M49 45 v30 M57 45 v30 M65 45 v30 M73 45 v30' stroke='%23fef3c7' stroke-width='4' stroke-linecap='round'/></svg>">
 
-  <!-- Tailwind CSS -->
+  <!-- Tailwind CSS CDN with dark mode class support -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class'
+    }
+  </script>
+
   <!-- Supabase Official Client JS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Instant Theme Bootstrapping (Prevents theme flickering on load) -->
+  <script>
+    (function() {
+      const saved = localStorage.getItem('irene_theme') || 'light';
+      if (saved === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    })();
+  </script>
 
   <style>
     @keyframes breakComb {
@@ -41,24 +59,34 @@
       animation: wiggleLock 0.35s ease-in-out;
     }
     .glass-card {
-      background: rgba(30, 41, 59, 0.85);
+      background: rgba(255, 255, 255, 0.93);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+    }
+    .dark .glass-card {
+      background: rgba(30, 41, 59, 0.85);
       border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
     }
     .custom-scrollbar::-webkit-scrollbar {
       height: 8px;
+      width: 8px;
     }
     .custom-scrollbar::-webkit-scrollbar-thumb {
       background: #f59e0b;
       border-radius: 999px;
     }
     .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(241, 245, 249, 0.8);
+    }
+    .dark .custom-scrollbar::-webkit-scrollbar-track {
       background: rgba(15, 23, 42, 0.8);
     }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen p-3 md:p-8 font-sans antialiased selection:bg-amber-500 selection:text-black">
+<body class="bg-gradient-to-br from-amber-50/70 via-stone-50 to-orange-50/50 dark:from-slate-950 dark:via-slate-950 dark:to-slate-900 text-slate-800 dark:text-slate-100 min-h-screen p-3 md:p-8 font-sans antialiased selection:bg-amber-400 selection:text-black transition-colors duration-300">
   <canvas id="confettiCanvas" class="fixed inset-0 pointer-events-none z-50"></canvas>
 
   <!-- Toast notification banner -->
@@ -69,42 +97,48 @@
 
   <div class="max-w-4xl mx-auto space-y-5">
     
-    <!-- Top Bar: Mode Switcher, Math Button & Cloud Status -->
+    <!-- Top Bar: Mode Switcher, Theme Toggle, Math Button & Cloud Status -->
     <div class="flex flex-wrap items-center justify-between gap-3 px-1 text-xs">
       
       <!-- Mode Toggle Badge -->
-      <div class="flex items-center gap-2 bg-slate-900/90 p-1.5 rounded-2xl border border-slate-800">
+      <div class="flex items-center gap-2 bg-white/90 dark:bg-slate-900/90 p-1.5 rounded-2xl border border-amber-200/80 dark:border-slate-800 shadow-sm">
         <button id="modeSharpBtn" class="px-3 py-1.5 rounded-xl font-bold transition flex items-center gap-1.5 bg-emerald-600 text-white shadow-sm">
           <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
           <span>Skarpt läge (Officiell)</span>
         </button>
-        <button id="modeTestBtn" class="px-3 py-1.5 rounded-xl font-semibold text-slate-400 hover:text-amber-300 transition flex items-center gap-1.5">
+        <button id="modeTestBtn" class="px-3 py-1.5 rounded-xl font-semibold text-slate-600 dark:text-slate-400 hover:text-amber-600 dark:hover:text-amber-300 transition flex items-center gap-1.5">
           <span>🧪</span>
           <span>Testläge (Sandlåda)</span>
         </button>
       </div>
 
-      <!-- Right Buttons: Math Proof & Cloud Status -->
-      <div class="flex items-center gap-3">
-        <button id="openMathModalBtn" class="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 font-bold text-xs flex items-center gap-1.5 transition shadow-sm">
+      <!-- Right Buttons: Theme Toggle, Math Proof & Cloud Status -->
+      <div class="flex items-center gap-2.5 flex-wrap">
+        <!-- Theme Toggle Button -->
+        <button id="themeToggleBtn" title="Växla mellan ljust och mörkt läge" class="px-3.5 py-1.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition shadow-sm bg-white hover:bg-amber-50 text-slate-800 border border-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-amber-300 dark:border-slate-700">
+          <span id="themeToggleIcon">🌙</span>
+          <span id="themeToggleText">Mörkt läge</span>
+        </button>
+
+        <button id="openMathModalBtn" class="px-3 py-1.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 dark:bg-amber-500/20 dark:hover:bg-amber-500/30 dark:text-amber-300 dark:border-amber-500/40 font-bold text-xs flex items-center gap-1.5 transition shadow-sm">
           <span>📐</span>
           <span>Hur matematiken fungerar</span>
         </button>
 
-        <div class="hidden sm:flex items-center gap-2 text-slate-400 text-[11px]">
+        <div class="hidden sm:flex items-center gap-2 text-slate-500 dark:text-slate-400 text-[11px]">
           <span id="dbStatusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-          <span id="dbStatusText" class="text-emerald-400 font-medium">Supabase Realtime</span>
+          <span id="dbStatusText" class="text-emerald-600 dark:text-emerald-400 font-medium">Supabase Realtime</span>
         </div>
       </div>
     </div>
 
     <!-- TEST MODE WARNING BANNER -->
-    <div id="testModeBanner" class="hidden p-4 rounded-3xl bg-gradient-to-r from-amber-950/90 via-yellow-950/90 to-amber-950/90 border-2 border-amber-500 text-amber-200 shadow-xl flex items-center justify-between flex-wrap gap-3">
+    <div id="testModeBanner" class="hidden p-4 rounded-3xl bg-gradient-to-r from-amber-100 via-yellow-100 to-amber-100 dark:from-amber-950/90 dark:via-yellow-950/90 dark:to-amber-950/90 border-2 border-amber-500 text-amber-950 dark:text-amber-200 shadow-xl flex items-center justify-between flex-wrap gap-3">
       <div class="flex items-center gap-3">
         <span class="text-2xl">🧪</span>
         <div>
-          <div class="font-black text-sm text-amber-300 uppercase tracking-wider">Du är i Testläget / Sandlådan</div>
-          <div class="text-xs text-amber-200/90 mt-0.5">
+          <div class="font-black text-sm text-amber-900 dark:text-amber-300 uppercase tracking-wider">Du är i Testläget / Sandlådan</div>
+          <div class="text-xs text-amber-800 dark:text-amber-200/90 mt-0.5">
             Här kan du leka och provknäcka tänder. <strong>Inget här påverkar Irenes officiella pensionskam!</strong>
           </div>
         </div>
@@ -115,35 +149,35 @@
     </div>
 
     <!-- Header Banner -->
-    <header class="glass-card rounded-3xl p-6 md:p-8 shadow-2xl relative overflow-hidden">
-      <div class="absolute -right-10 -top-10 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
-      <div class="absolute -left-10 -bottom-10 w-48 h-48 bg-rose-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <header class="glass-card rounded-3xl p-6 md:p-8 shadow-xl relative overflow-hidden">
+      <div class="absolute -right-10 -top-10 w-48 h-48 bg-amber-400/20 dark:bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -left-10 -bottom-10 w-48 h-48 bg-rose-400/20 dark:bg-rose-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 relative z-10">
         <div>
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-950/60 border border-rose-700/50 text-rose-300 text-xs font-semibold uppercase tracking-wider mb-2">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-100 dark:bg-rose-950/60 border border-rose-300 dark:border-rose-700/50 text-rose-700 dark:text-rose-300 text-xs font-semibold uppercase tracking-wider mb-2">
             <span>🎉</span> 52 VECKOR • 15 OKT 2026 – 15 OKT 2027
           </div>
-          <h1 class="text-3xl md:text-4xl font-black tracking-tight text-white flex items-center gap-3">
+          <h1 class="text-3xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white flex items-center gap-3">
             Irenes Muckarkam 🪮
           </h1>
-          <p class="text-slate-400 text-sm md:text-base mt-1">
-            En tand för varje avverkad arbetsvecka! Frihetsmål: <span class="font-bold text-slate-200">15 oktober 2027</span>
+          <p class="text-slate-600 dark:text-slate-400 text-sm md:text-base mt-1">
+            En tand för varje avverkad arbetsvecka! Frihetsmål: <span class="font-bold text-slate-900 dark:text-slate-200">15 oktober 2027</span>
           </p>
         </div>
 
         <!-- Clock badge -->
-        <div class="flex items-center gap-3 bg-slate-900/80 px-4 py-2.5 rounded-2xl border border-slate-800 shadow-sm self-start md:self-auto">
+        <div class="flex items-center gap-3 bg-white/85 dark:bg-slate-900/80 px-4 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm self-start md:self-auto">
           <div id="headerStatusDot" class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></div>
           <div>
-            <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold" id="clockHeaderLabel">SKARPT LÄGE</div>
-            <div id="liveClock" class="text-xs font-mono font-bold text-slate-200">--:--:--</div>
+            <div class="text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-bold" id="clockHeaderLabel">SKARPT LÄGE</div>
+            <div id="liveClock" class="text-xs font-mono font-bold text-slate-800 dark:text-slate-200">--:--:--</div>
           </div>
         </div>
       </div>
 
       <!-- Pre-start notice -->
-      <div id="preStartBanner" class="mt-4 p-3.5 bg-amber-950/40 border border-amber-700/40 rounded-2xl flex items-center justify-between flex-wrap gap-3 text-xs text-amber-200">
+      <div id="preStartBanner" class="mt-4 p-3.5 bg-amber-100/90 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700/40 rounded-2xl flex items-center justify-between flex-wrap gap-3 text-xs text-amber-900 dark:text-amber-200">
         <div class="flex items-center gap-3">
           <span class="text-2xl">⏳</span>
           <div>
@@ -152,26 +186,26 @@
             Alla 52 tänder är intakta tills respektive vecka avverkats i verkligheten.
           </div>
         </div>
-        <button id="quickMathBtn" class="underline text-amber-300 hover:text-white font-bold text-[11px]">
+        <button id="quickMathBtn" class="underline text-amber-800 dark:text-amber-300 hover:text-amber-950 dark:hover:text-white font-bold text-[11px]">
           Hur räknas arbetsdagarna ut? ➔
         </button>
       </div>
     </header>
 
     <!-- The 52-Week Digital Comb -->
-    <div class="glass-card rounded-3xl p-6 md:p-8 shadow-2xl space-y-4">
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-slate-700/80 pb-3">
+    <div class="glass-card rounded-3xl p-6 md:p-8 shadow-xl space-y-4">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-700/80 pb-3">
         <div>
-          <h2 class="text-xl font-black text-white flex items-center gap-2">
+          <h2 class="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
             <span>🪮</span> Den 52-Tandade Muckarkammen
           </h2>
-          <p class="text-xs text-slate-400 mt-0.5">
+          <p class="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
             Varje tand = 1 arbetsvecka. Månaderna visas under tänderna så du ser exakt var du är!
           </p>
         </div>
 
         <!-- Legend -->
-        <div class="flex items-center gap-3 text-[11px] font-medium text-slate-300">
+        <div class="flex items-center gap-3 text-[11px] font-medium text-slate-600 dark:text-slate-300">
           <span class="inline-flex items-center gap-1.5">
             <span class="w-3 h-3 rounded-sm bg-amber-500 shadow-sm border border-amber-300"></span> Intakt tand
           </span>
@@ -179,42 +213,42 @@
             <span class="w-3 h-3 rounded-sm bg-yellow-300 ring-2 ring-yellow-400 animate-pulse"></span> Redo att knäckas!
           </span>
           <span class="inline-flex items-center gap-1.5">
-            <span class="w-3 h-1.5 rounded-sm bg-stone-700"></span> Avbruten stubbe
+            <span class="w-3 h-1.5 rounded-sm bg-slate-400 dark:bg-stone-700"></span> Avbruten stubbe
           </span>
         </div>
       </div>
 
       <!-- Stat Summary -->
       <div class="grid grid-cols-3 gap-3 text-center py-1">
-        <div class="p-3 bg-amber-950/30 rounded-2xl border border-amber-800/40">
-          <div class="text-[10px] uppercase font-bold text-amber-300">Veckor brutna</div>
-          <div id="statBrokenWeeks" class="text-2xl font-black text-amber-400">0</div>
+        <div class="p-3 bg-amber-50 dark:bg-amber-950/30 rounded-2xl border border-amber-200 dark:border-amber-800/40">
+          <div class="text-[10px] uppercase font-bold text-amber-700 dark:text-amber-300">Veckor brutna</div>
+          <div id="statBrokenWeeks" class="text-2xl font-black text-amber-600 dark:text-amber-400">0</div>
         </div>
-        <div class="p-3 bg-emerald-950/30 rounded-2xl border border-emerald-800/40">
-          <div class="text-[10px] uppercase font-bold text-emerald-300">Redo att knäcka nu</div>
-          <div id="statReadyWeeks" class="text-2xl font-black text-emerald-400">0</div>
+        <div class="p-3 bg-emerald-50 dark:bg-emerald-950/30 rounded-2xl border border-emerald-200 dark:border-emerald-800/40">
+          <div class="text-[10px] uppercase font-bold text-emerald-700 dark:text-emerald-300">Redo att knäcka nu</div>
+          <div id="statReadyWeeks" class="text-2xl font-black text-emerald-600 dark:text-emerald-400">0</div>
         </div>
-        <div class="p-3 bg-rose-950/30 rounded-2xl border border-rose-800/40">
-          <div class="text-[10px] uppercase font-bold text-rose-300">Veckor kvar att jobba</div>
-          <div id="statWeeksLeft" class="text-2xl font-black text-rose-400">52</div>
+        <div class="p-3 bg-rose-50 dark:bg-rose-950/30 rounded-2xl border border-rose-200 dark:border-rose-800/40">
+          <div class="text-[10px] uppercase font-bold text-rose-700 dark:text-rose-300">Veckor kvar att jobba</div>
+          <div id="statWeeksLeft" class="text-2xl font-black text-rose-600 dark:text-rose-400">52</div>
         </div>
       </div>
 
       <!-- Comb Graphic Box with Month Bar -->
-      <div class="p-4 md:p-6 bg-slate-900 rounded-3xl shadow-2xl overflow-hidden border-2 border-amber-500/40">
+      <div class="p-4 md:p-6 bg-amber-50/70 dark:bg-slate-900 rounded-3xl shadow-xl overflow-hidden border-2 border-amber-300 dark:border-amber-500/40">
         
         <!-- Comb Spine -->
-        <div class="h-12 bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 rounded-t-2xl border-b-4 border-amber-950 flex items-center px-4 justify-between shadow-lg">
+        <div class="h-12 bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 dark:from-amber-600 dark:via-amber-500 dark:to-amber-600 rounded-t-2xl border-b-4 border-amber-800 dark:border-amber-950 flex items-center px-4 justify-between shadow-md">
           <span class="text-xs md:text-sm font-black tracking-widest text-slate-950 uppercase font-mono flex items-center gap-2">
             <span>★</span> IRENE • 52 VECKORS MUCKARKAM 2026-2027 <span>★</span>
           </span>
-          <span class="text-[11px] md:text-xs font-black text-slate-950 font-mono tracking-wider bg-amber-300/60 px-2 py-0.5 rounded border border-amber-900/30">
+          <span class="text-[11px] md:text-xs font-black text-slate-950 font-mono tracking-wider bg-amber-200/80 dark:bg-amber-300/60 px-2 py-0.5 rounded border border-amber-900/30">
             PENSION 15 OKT 2027
           </span>
         </div>
 
-        <!-- Teeth Shelf Container -->
-        <div class="bg-black/95 rounded-b-2xl p-4 border-x border-b border-amber-900/40">
+        <!-- Teeth Shelf Container (Deep velvet backing so golden teeth shine radiantly in both modes!) -->
+        <div class="bg-stone-950 rounded-b-2xl p-4 border-x border-b border-amber-900/40">
           <div id="combTeethContainer" class="flex gap-2 pt-1 overflow-x-auto custom-scrollbar pb-4 min-h-[160px] items-start select-none">
             <!-- 52 teeth will be generated here -->
           </div>
@@ -232,27 +266,27 @@
       <div class="pt-2">
         
         <!-- SHARP CONTROLS -->
-        <div id="sharpControlsBar" class="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-          <button id="breakNextReadyBtn" class="px-5 py-3 rounded-xl bg-slate-800 border border-slate-700 text-slate-400 font-bold text-sm flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed transition">
-            <span>🔒</span> Knäck förverkad vecka (Skarpt)
+        <div id="sharpControlsBar" class="bg-slate-100/90 dark:bg-slate-900/60 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+          <button id="breakNextReadyBtn" class="px-5 py-3 rounded-xl bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-400 font-bold text-sm flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed transition">
+            <span>🔒</span> Inga veckor redo än (Skarpt)
           </button>
-          <span class="text-xs text-slate-400 italic">
+          <span class="text-xs text-slate-500 dark:text-slate-400 italic">
             I skarpt läge låses varje tand upp automatiskt på fredagar kl 17:00.
           </span>
         </div>
 
         <!-- TEST CONTROLS -->
-        <div id="testControlsBar" class="hidden bg-amber-950/40 p-4 rounded-2xl border border-amber-600/40 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+        <div id="testControlsBar" class="hidden bg-amber-100/70 dark:bg-amber-950/40 p-4 rounded-2xl border border-amber-300 dark:border-amber-600/40 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
           <div class="flex flex-wrap items-center gap-2.5">
             <button id="testBreakBtn" class="px-5 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-600 hover:to-rose-600 text-white font-bold shadow-md shadow-rose-500/20 active:scale-95 transition flex items-center gap-1.5 text-xs">
               <span>🧪</span> Provknäck en tand (Test)
             </button>
-            <label class="flex items-center gap-2 cursor-pointer select-none text-xs font-medium text-amber-300 hover:text-white transition px-2">
+            <label class="flex items-center gap-2 cursor-pointer select-none text-xs font-medium text-amber-900 dark:text-amber-300 hover:text-amber-700 dark:hover:text-white transition px-2">
               <input type="checkbox" id="freeClickToggle" class="w-4 h-4 rounded accent-amber-500 cursor-pointer">
               <span>Fri klickning på alla tänder</span>
             </label>
           </div>
-          <button id="resetTeethBtn" class="px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white text-xs font-semibold transition">
+          <button id="resetTeethBtn" class="px-3.5 py-2.5 rounded-xl bg-white hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold transition shadow-sm">
             Återställ testkammen
           </button>
         </div>
@@ -261,18 +295,18 @@
     </div>
 
     <!-- Muckarloggen / Historik -->
-    <div class="glass-card rounded-3xl p-6 md:p-8 shadow-2xl space-y-4">
-      <div class="flex items-center justify-between flex-wrap gap-2 border-b border-slate-700/80 pb-3">
+    <div class="glass-card rounded-3xl p-6 md:p-8 shadow-xl space-y-4">
+      <div class="flex items-center justify-between flex-wrap gap-2 border-b border-slate-200 dark:border-slate-700/80 pb-3">
         <div>
-          <h2 class="text-xl font-black text-white flex items-center gap-2">
+          <h2 class="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
             <span>📖</span> Irenes Muckarlogg & Historik
           </h2>
-          <p class="text-xs text-slate-400 mt-0.5" id="historySubtitle">
+          <p class="text-xs text-slate-600 dark:text-slate-400 mt-0.5" id="historySubtitle">
             Officiell historiklogg från molndatabasen.
           </p>
         </div>
         <div class="flex items-center gap-2">
-          <button id="clearLogBtn" class="hidden text-xs text-slate-500 hover:text-rose-400 transition">
+          <button id="clearLogBtn" class="hidden text-xs text-slate-500 hover:text-rose-500 transition">
             Rensa testlogg
           </button>
         </div>
@@ -286,91 +320,91 @@
     <!-- Main Stats Row -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div class="glass-card rounded-2xl p-5 shadow-lg flex items-center gap-4">
-        <div class="w-12 h-12 rounded-2xl bg-rose-900/40 text-rose-400 flex items-center justify-center text-2xl font-bold">
+        <div class="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 dark:bg-rose-900/40 dark:text-rose-400 flex items-center justify-center text-2xl font-bold">
           💼
         </div>
         <div>
-          <span class="text-xs font-semibold text-slate-400 uppercase">Arbetsdagar kvar</span>
-          <div id="statWorkdays" class="text-2xl font-extrabold text-white">--</div>
-          <span class="text-[11px] text-slate-400">Exklusive helger & röda dagar</span>
+          <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Arbetsdagar kvar</span>
+          <div id="statWorkdays" class="text-2xl font-extrabold text-slate-900 dark:text-white">--</div>
+          <span class="text-[11px] text-slate-500 dark:text-slate-400">Exklusive helger & röda dagar</span>
         </div>
       </div>
 
       <div class="glass-card rounded-2xl p-5 shadow-lg flex items-center gap-4">
-        <div class="w-12 h-12 rounded-2xl bg-indigo-900/40 text-indigo-400 flex items-center justify-center text-2xl font-bold">
+        <div class="w-12 h-12 rounded-2xl bg-indigo-100 text-indigo-600 dark:bg-indigo-900/40 dark:text-indigo-400 flex items-center justify-center text-2xl font-bold">
           📅
         </div>
         <div>
-          <span class="text-xs font-semibold text-slate-400 uppercase">Måndagar kvar</span>
-          <div id="statMondays" class="text-2xl font-extrabold text-white">--</div>
-          <span class="text-[11px] text-slate-400">Bara måndagarna att bocka av!</span>
+          <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Måndagar kvar</span>
+          <div id="statMondays" class="text-2xl font-extrabold text-slate-900 dark:text-white">--</div>
+          <span class="text-[11px] text-slate-500 dark:text-slate-400">Bara måndagarna att bocka av!</span>
         </div>
       </div>
 
       <div class="glass-card rounded-2xl p-5 shadow-lg flex items-center gap-4">
-        <div class="w-12 h-12 rounded-2xl bg-amber-900/40 text-amber-400 flex items-center justify-center text-2xl font-bold">
+        <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 dark:bg-amber-900/40 dark:text-amber-400 flex items-center justify-center text-2xl font-bold">
           ☕
         </div>
         <div>
-          <span class="text-xs font-semibold text-slate-400 uppercase">Kaffekoppar kvar</span>
-          <div id="statCoffee" class="text-2xl font-extrabold text-white">--</div>
-          <span class="text-[11px] text-slate-400">Räknat på 2 koppar/arbetsdag</span>
+          <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Kaffekoppar kvar</span>
+          <div id="statCoffee" class="text-2xl font-extrabold text-slate-900 dark:text-white">--</div>
+          <span class="text-[11px] text-slate-500 dark:text-slate-400">Räknat på 2 koppar/arbetsdag</span>
         </div>
       </div>
     </div>
 
     <!-- Vacation Slider -->
-    <div class="glass-card rounded-3xl p-6 shadow-xl space-y-3">
+    <div class="glass-card rounded-3xl p-6 shadow-lg space-y-3">
       <div class="flex items-center justify-between">
         <div>
-          <h3 class="font-bold text-white flex items-center gap-2">
+          <h3 class="font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <span>✈️</span> Semester & Kompdagar att dra av sista året
           </h3>
-          <p class="text-xs text-slate-400">
+          <p class="text-xs text-slate-600 dark:text-slate-400">
             Dra i reglaget för att minska arbetsdagarna ytterligare!
           </p>
         </div>
-        <div class="px-3 py-1.5 bg-rose-950/60 border border-rose-800 text-rose-300 font-bold rounded-xl text-sm font-mono" id="vacationDisplay">
+        <div class="px-3 py-1.5 bg-rose-100 dark:bg-rose-950/60 border border-rose-300 dark:border-rose-800 text-rose-700 dark:text-rose-300 font-bold rounded-xl text-sm font-mono" id="vacationDisplay">
           25 dagar
         </div>
       </div>
 
-      <input type="range" id="vacationSlider" min="0" max="50" value="25" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-rose-500">
+      <input type="range" id="vacationSlider" min="0" max="50" value="25" class="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-rose-500">
     </div>
 
     <!-- Footer -->
-    <footer class="text-center text-xs text-slate-500 py-4 space-y-1">
-      <p>Byggd för Irene • 15 oktober 2026 till 15 oktober 2027</p>
+    <footer class="text-center text-xs text-slate-500 dark:text-slate-500 py-4 space-y-1">
+      <p>Byggd med omtanke för Irene • 15 oktober 2026 till 15 oktober 2027</p>
       <p class="text-[11px]">Synkad via Supabase PostgreSQL Cloud med Realtime live-feed.</p>
     </footer>
 
   </div>
 
   <!-- Note Input Modal -->
-  <div id="noteModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
-    <div class="bg-slate-900 border border-amber-600/40 rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl transform scale-95 transition-transform duration-300" id="noteModalBox">
+  <div id="noteModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="bg-white dark:bg-slate-900 border border-amber-300 dark:border-amber-600/40 rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl transform scale-95 transition-transform duration-300" id="noteModalBox">
       <div class="text-center space-y-1">
         <div class="text-4xl">🎉 ✂️</div>
-        <h3 class="text-xl font-black text-white" id="modalWeekTitle">Vecka X avklarad!</h3>
-        <p class="text-xs text-slate-400">Ett steg närmare friheten! Vill du spara en notis i Muckarloggen?</p>
+        <h3 class="text-xl font-black text-slate-900 dark:text-white" id="modalWeekTitle">Vecka X avklarad!</h3>
+        <p class="text-xs text-slate-600 dark:text-slate-400">Ett steg närmare friheten! Vill du spara en notis i Muckarloggen?</p>
       </div>
 
       <div class="space-y-2">
         <div class="flex gap-2 justify-center py-1">
-          <button type="button" class="emoji-pick text-xl p-2 rounded-xl bg-slate-800 hover:bg-slate-700 ring-2 ring-amber-400">🎉</button>
-          <button type="button" class="emoji-pick text-xl p-2 rounded-xl bg-slate-800 hover:bg-slate-700">🥂</button>
-          <button type="button" class="emoji-pick text-xl p-2 rounded-xl bg-slate-800 hover:bg-slate-700">🏖️</button>
-          <button type="button" class="emoji-pick text-xl p-2 rounded-xl bg-slate-800 hover:bg-slate-700">☕</button>
-          <button type="button" class="emoji-pick text-xl p-2 rounded-xl bg-slate-800 hover:bg-slate-700">🍰</button>
+          <button type="button" class="emoji-pick text-xl p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 ring-2 ring-amber-400">🎉</button>
+          <button type="button" class="emoji-pick text-xl p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700">🥂</button>
+          <button type="button" class="emoji-pick text-xl p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700">🏖️</button>
+          <button type="button" class="emoji-pick text-xl p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700">☕</button>
+          <button type="button" class="emoji-pick text-xl p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700">🍰</button>
         </div>
-        <input type="text" id="noteInput" placeholder="T.ex. Helg! Firar med tårta på jobbet..." class="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-amber-500">
+        <input type="text" id="noteInput" placeholder="T.ex. Helg! Firar med tårta på jobbet..." class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 text-sm focus:outline-none focus:border-amber-500">
       </div>
 
       <div class="flex gap-2">
         <button id="saveNoteBtn" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-600 hover:to-rose-600 text-white font-bold text-sm shadow-md transition">
           Spara i loggboken ✨
         </button>
-        <button id="skipNoteBtn" class="px-4 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 text-sm font-semibold transition">
+        <button id="skipNoteBtn" class="px-4 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-400 text-sm font-semibold transition">
           Hoppa över
         </button>
       </div>
@@ -378,56 +412,56 @@
   </div>
 
   <!-- MATH & RED DAYS MODAL -->
-  <div id="mathModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
-    <div class="bg-slate-900 border border-amber-500/50 rounded-3xl max-w-2xl w-full p-6 md:p-8 space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar transform scale-95 transition-transform duration-300" id="mathModalBox">
+  <div id="mathModal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="bg-white dark:bg-slate-900 border border-amber-400 dark:border-amber-500/50 rounded-3xl max-w-2xl w-full p-6 md:p-8 space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar transform scale-95 transition-transform duration-300" id="mathModalBox">
       
-      <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
         <div>
-          <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-950/60 border border-amber-600/50 text-amber-300 text-[10px] font-bold uppercase tracking-wider mb-1">
+          <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-600/50 text-amber-900 dark:text-amber-300 text-[10px] font-bold uppercase tracking-wider mb-1">
             Beviset för Irene
           </div>
-          <h3 class="text-2xl font-black text-white flex items-center gap-2">
+          <h3 class="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2">
             <span>📐</span> Hur matematiken fungerar
           </h3>
         </div>
-        <button id="closeMathModal" class="w-9 h-9 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center text-lg font-bold transition">
+        <button id="closeMathModal" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-300 dark:hover:text-white flex items-center justify-center text-lg font-bold transition">
           &times;
         </button>
       </div>
 
       <!-- Formula Breakdown Cards -->
       <div class="space-y-3">
-        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Steg-för-steg: Från 365 dagar till frihet</h4>
+        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Steg-för-steg: Från 365 dagar till frihet</h4>
         
         <div class="grid grid-cols-1 sm:grid-cols-4 gap-2.5 text-center text-xs">
-          <div class="p-3 bg-slate-800/70 rounded-2xl border border-slate-700">
-            <div class="text-slate-400 text-[10px] uppercase font-semibold">1. Totalt</div>
-            <div class="text-xl font-black text-white mt-1">365</div>
-            <div class="text-[10px] text-slate-400">kalenderdagar</div>
+          <div class="p-3 bg-slate-100 dark:bg-slate-800/70 rounded-2xl border border-slate-200 dark:border-slate-700">
+            <div class="text-slate-500 dark:text-slate-400 text-[10px] uppercase font-semibold">1. Totalt</div>
+            <div class="text-xl font-black text-slate-900 dark:text-white mt-1">365</div>
+            <div class="text-[10px] text-slate-500 dark:text-slate-400">kalenderdagar</div>
           </div>
-          <div class="p-3 bg-rose-950/40 rounded-2xl border border-rose-800/40">
-            <div class="text-rose-300 text-[10px] uppercase font-semibold">2. Helger bort</div>
-            <div class="text-xl font-black text-rose-400 mt-1">- 104</div>
-            <div class="text-[10px] text-rose-300/70">52 lörd + 52 sönd</div>
+          <div class="p-3 bg-rose-50 dark:bg-rose-950/40 rounded-2xl border border-rose-200 dark:border-rose-800/40">
+            <div class="text-rose-700 dark:text-rose-300 text-[10px] uppercase font-semibold">2. Helger bort</div>
+            <div class="text-xl font-black text-rose-600 dark:text-rose-400 mt-1">- 104</div>
+            <div class="text-[10px] text-rose-600/80 dark:text-rose-300/70">52 lörd + 52 sönd</div>
           </div>
-          <div class="p-3 bg-amber-950/40 rounded-2xl border border-amber-800/40">
-            <div class="text-amber-300 text-[10px] uppercase font-semibold">3. Röda dagar</div>
-            <div class="text-xl font-black text-amber-400 mt-1">- 9</div>
-            <div class="text-[10px] text-amber-300/70">på vardagar</div>
+          <div class="p-3 bg-amber-50 dark:bg-amber-950/40 rounded-2xl border border-amber-200 dark:border-amber-800/40">
+            <div class="text-amber-800 dark:text-amber-300 text-[10px] uppercase font-semibold">3. Röda dagar</div>
+            <div class="text-xl font-black text-amber-600 dark:text-amber-400 mt-1">- 9</div>
+            <div class="text-[10px] text-amber-700/80 dark:text-amber-300/70">på vardagar</div>
           </div>
-          <div class="p-3 bg-emerald-950/40 rounded-2xl border border-emerald-800/40">
-            <div class="text-emerald-300 text-[10px] uppercase font-semibold">4. Före semester</div>
-            <div class="text-xl font-black text-emerald-400 mt-1">= 252</div>
-            <div class="text-[10px] text-emerald-300/70">arbetsdagar kvar!</div>
+          <div class="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/40">
+            <div class="text-emerald-800 dark:text-emerald-300 text-[10px] uppercase font-semibold">4. Före semester</div>
+            <div class="text-xl font-black text-emerald-600 dark:text-emerald-400 mt-1">= 252</div>
+            <div class="text-[10px] text-emerald-700/80 dark:text-emerald-300/70">arbetsdagar kvar!</div>
           </div>
         </div>
 
-        <div class="p-4 bg-gradient-to-r from-emerald-950/60 to-teal-950/60 border border-emerald-500/40 rounded-2xl flex items-center justify-between gap-4">
+        <div class="p-4 bg-gradient-to-r from-emerald-100 via-teal-100 to-emerald-100 dark:from-emerald-950/60 dark:to-teal-950/60 border border-emerald-300 dark:border-emerald-500/40 rounded-2xl flex items-center justify-between gap-4">
           <div>
-            <div class="text-xs font-bold text-emerald-300">Med dina 25 semesterdagar avdragna:</div>
-            <div class="text-[11px] text-slate-300 mt-0.5">252 arbetsdagar minus 25 semesterdagar =</div>
+            <div class="text-xs font-bold text-emerald-900 dark:text-emerald-300">Med dina 25 semesterdagar avdragna:</div>
+            <div class="text-[11px] text-slate-700 dark:text-slate-300 mt-0.5">252 arbetsdagar minus 25 semesterdagar =</div>
           </div>
-          <div class="text-3xl font-black text-emerald-400 font-mono">
+          <div class="text-3xl font-black text-emerald-700 dark:text-emerald-400 font-mono">
             227 dagar!
           </div>
         </div>
@@ -436,56 +470,56 @@
       <!-- Complete List of All Swedish Red Days -->
       <div class="space-y-3">
         <div class="flex items-center justify-between">
-          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
             Alla 9 svenska röda dagar & helgdagsaftnar (på vardagar)
           </h4>
-          <span class="text-[10px] text-amber-300/80 font-mono">15 okt 2026 – 15 okt 2027</span>
+          <span class="text-[10px] text-amber-800 dark:text-amber-300/80 font-mono">15 okt 2026 – 15 okt 2027</span>
         </div>
 
         <div class="space-y-2 text-xs">
-          <div class="text-[10px] font-bold text-amber-400/80 uppercase tracking-widest pt-1">År 2026:</div>
-          <div class="p-2.5 bg-slate-800/70 rounded-xl border border-slate-700/70 flex items-center justify-between">
+          <div class="text-[10px] font-bold text-amber-700 dark:text-amber-400/80 uppercase tracking-widest pt-1">År 2026:</div>
+          <div class="p-2.5 bg-slate-50 dark:bg-slate-800/70 rounded-xl border border-slate-200 dark:border-slate-700/70 flex items-center justify-between">
             <span class="flex items-center gap-2"><span>🎄</span> <strong>Julafton</strong></span>
-            <span class="font-mono text-slate-300">Torsdag 24 december 2026</span>
+            <span class="font-mono text-slate-600 dark:text-slate-300">Torsdag 24 december 2026</span>
           </div>
-          <div class="p-2.5 bg-slate-800/70 rounded-xl border border-slate-700/70 flex items-center justify-between">
+          <div class="p-2.5 bg-slate-50 dark:bg-slate-800/70 rounded-xl border border-slate-200 dark:border-slate-700/70 flex items-center justify-between">
             <span class="flex items-center gap-2"><span>🎅</span> <strong>Juldagen</strong></span>
-            <span class="font-mono text-slate-300">Fredag 25 december 2026</span>
+            <span class="font-mono text-slate-600 dark:text-slate-300">Fredag 25 december 2026</span>
           </div>
-          <div class="p-2.5 bg-slate-800/70 rounded-xl border border-slate-700/70 flex items-center justify-between">
+          <div class="p-2.5 bg-slate-50 dark:bg-slate-800/70 rounded-xl border border-slate-200 dark:border-slate-700/70 flex items-center justify-between">
             <span class="flex items-center gap-2"><span>🥂</span> <strong>Nyårsafton</strong></span>
-            <span class="font-mono text-slate-300">Torsdag 31 december 2026</span>
+            <span class="font-mono text-slate-600 dark:text-slate-300">Torsdag 31 december 2026</span>
           </div>
 
-          <div class="text-[10px] font-bold text-amber-400/80 uppercase tracking-widest pt-2">År 2027:</div>
-          <div class="p-2.5 bg-slate-800/70 rounded-xl border border-slate-700/70 flex items-center justify-between">
+          <div class="text-[10px] font-bold text-amber-700 dark:text-amber-400/80 uppercase tracking-widest pt-2">År 2027:</div>
+          <div class="p-2.5 bg-slate-50 dark:bg-slate-800/70 rounded-xl border border-slate-200 dark:border-slate-700/70 flex items-center justify-between">
             <span class="flex items-center gap-2"><span>🎆</span> <strong>Nyårsdagen</strong></span>
-            <span class="font-mono text-slate-300">Fredag 1 januari 2027</span>
+            <span class="font-mono text-slate-600 dark:text-slate-300">Fredag 1 januari 2027</span>
           </div>
-          <div class="p-2.5 bg-slate-800/70 rounded-xl border border-slate-700/70 flex items-center justify-between">
+          <div class="p-2.5 bg-slate-50 dark:bg-slate-800/70 rounded-xl border border-slate-200 dark:border-slate-700/70 flex items-center justify-between">
             <span class="flex items-center gap-2"><span>👑</span> <strong>Trettondedag jul</strong></span>
-            <span class="font-mono text-slate-300">Onsdag 6 januari 2027</span>
+            <span class="font-mono text-slate-600 dark:text-slate-300">Onsdag 6 januari 2027</span>
           </div>
-          <div class="p-2.5 bg-slate-800/70 rounded-xl border border-slate-700/70 flex items-center justify-between">
+          <div class="p-2.5 bg-slate-50 dark:bg-slate-800/70 rounded-xl border border-slate-200 dark:border-slate-700/70 flex items-center justify-between">
             <span class="flex items-center gap-2"><span>🐣</span> <strong>Långfredagen</strong></span>
-            <span class="font-mono text-slate-300">Fredag 26 mars 2027</span>
+            <span class="font-mono text-slate-600 dark:text-slate-300">Fredag 26 mars 2027</span>
           </div>
-          <div class="p-2.5 bg-slate-800/70 rounded-xl border border-slate-700/70 flex items-center justify-between">
+          <div class="p-2.5 bg-slate-50 dark:bg-slate-800/70 rounded-xl border border-slate-200 dark:border-slate-700/70 flex items-center justify-between">
             <span class="flex items-center gap-2"><span>🐣</span> <strong>Annandag påsk</strong></span>
-            <span class="font-mono text-slate-300">Måndag 29 mars 2027</span>
+            <span class="font-mono text-slate-600 dark:text-slate-300">Måndag 29 mars 2027</span>
           </div>
-          <div class="p-2.5 bg-slate-800/70 rounded-xl border border-slate-700/70 flex items-center justify-between">
+          <div class="p-2.5 bg-slate-50 dark:bg-slate-800/70 rounded-xl border border-slate-200 dark:border-slate-700/70 flex items-center justify-between">
             <span class="flex items-center gap-2"><span>🕊️</span> <strong>Kristi himmelsfärdsdag</strong></span>
-            <span class="font-mono text-slate-300">Torsdag 6 maj 2027</span>
+            <span class="font-mono text-slate-600 dark:text-slate-300">Torsdag 6 maj 2027</span>
           </div>
-          <div class="p-2.5 bg-slate-800/70 rounded-xl border border-slate-700/70 flex items-center justify-between">
+          <div class="p-2.5 bg-slate-50 dark:bg-slate-800/70 rounded-xl border border-slate-200 dark:border-slate-700/70 flex items-center justify-between">
             <span class="flex items-center gap-2"><span>🌸</span> <strong>Midsommarafton</strong></span>
-            <span class="font-mono text-slate-300">Fredag 25 juni 2027</span>
+            <span class="font-mono text-slate-600 dark:text-slate-300">Fredag 25 juni 2027</span>
           </div>
         </div>
 
-        <div class="p-3 bg-slate-800/40 rounded-xl border border-slate-700/40 text-[11px] text-slate-400">
-          <strong class="text-slate-300">Obs:</strong> Första maj 2027 infaller på en lördag och Nationaldagen 6 juni 2027 infaller på en söndag. De är därför redan inräknade som vanliga helgdagar i steg 2.
+        <div class="p-3 bg-slate-100 dark:bg-slate-800/40 rounded-xl border border-slate-200 dark:border-slate-700/40 text-[11px] text-slate-600 dark:text-slate-400">
+          <strong class="text-slate-800 dark:text-slate-300">Obs:</strong> Första maj 2027 infaller på en lördag och Nationaldagen 6 juni 2027 infaller på en söndag. De är därför redan inräknade som vanliga helgdagar i steg 2.
         </div>
       </div>
 
@@ -681,7 +715,7 @@
       return { count, mondays };
     }
 
-    // TEETH RENDERING WITH MONTH LABELS & WEEK NUMBERS!
+    // TEETH RENDERING WITH MONTH LABELS & WEEK NUMBERS
     function renderTeeth() {
       const container = document.getElementById("combTeethContainer");
       container.innerHTML = "";
@@ -766,7 +800,6 @@
         monthLabel.className = "h-4 flex items-center justify-center mt-0.5 select-none";
         if (isNewMonth) {
           const mBadge = document.createElement("span");
-          // Special badge if it's the turn of the year (Jan 2027)
           if (w.monthName === "Jan") {
             mBadge.className = "text-[9px] font-mono font-black uppercase text-amber-300 bg-amber-950/80 px-1 py-0.5 rounded border border-amber-600/60 whitespace-nowrap shadow-sm";
             mBadge.innerText = "Jan '27";
@@ -798,7 +831,7 @@
         nextBtn.className = "px-5 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-600 hover:to-rose-600 text-white font-black shadow-lg shadow-rose-500/25 active:scale-95 transition flex items-center gap-2 text-sm animate-bounce";
         nextBtn.innerHTML = `<span>🎉</span> Knäck Vecka (${readyCount} redo!)`;
       } else {
-        nextBtn.className = "px-5 py-3 rounded-xl bg-slate-800 border border-slate-700 text-slate-400 font-bold text-sm flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed transition";
+        nextBtn.className = "px-5 py-3 rounded-xl bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-400 font-bold text-sm flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed transition";
         nextBtn.innerHTML = `<span>🔒</span> Inga veckor redo än (Skarpt)`;
       }
 
@@ -823,22 +856,22 @@
       const sorted = [...historyLog].reverse();
       sorted.forEach((item) => {
         const row = document.createElement("div");
-        row.className = "p-3 bg-slate-800/60 rounded-2xl border border-slate-700/60 flex items-center justify-between gap-3 text-xs";
+        row.className = "p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700/60 flex items-center justify-between gap-3 text-xs";
         
         row.innerHTML = `
           <div class="flex items-center gap-3">
             <span class="text-2xl">${item.emoji || "✂️"}</span>
             <div>
-              <div class="font-bold text-white flex items-center gap-2">
+              <div class="font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <span>Vecka ${item.weekNum} avklarad!</span>
-                <span class="text-[10px] text-amber-400 font-mono bg-amber-950/60 px-2 py-0.5 rounded-full border border-amber-800/40">Bruten</span>
+                <span class="text-[10px] text-amber-800 dark:text-amber-400 font-mono bg-amber-100 dark:bg-amber-950/60 px-2 py-0.5 rounded-full border border-amber-300 dark:border-amber-800/40">Bruten</span>
               </div>
-              <div class="text-slate-400 text-[11px] mt-0.5">
+              <div class="text-slate-600 dark:text-slate-400 text-[11px] mt-0.5">
                 ${item.note ? `"${item.note}" • ` : ""}${item.dateStr}
               </div>
             </div>
           </div>
-          <span class="text-[11px] font-mono text-slate-400">${item.timeStr || ""}</span>
+          <span class="text-[11px] font-mono text-slate-500 dark:text-slate-400">${item.timeStr || ""}</span>
         `;
         container.appendChild(row);
       });
@@ -930,7 +963,38 @@
       }
     }
 
-    // MODE SWITCHING
+    // THEME TOGGLE LOGIC (Default: Light UI for Irene with instant toggle)
+    const themeToggleBtn = document.getElementById("themeToggleBtn");
+    const themeToggleIcon = document.getElementById("themeToggleIcon");
+    const themeToggleText = document.getElementById("themeToggleText");
+    const themeMeta = document.querySelector('meta[name="theme-color"]');
+
+    function applyTheme(theme, showFeedback = false) {
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+        themeToggleIcon.innerText = "☀️";
+        themeToggleText.innerText = "Ljust läge";
+        if (themeMeta) themeMeta.setAttribute('content', '#020617');
+        if (showFeedback) showToast("Mörkt läge aktiverat 🌙", "🌙");
+      } else {
+        document.documentElement.classList.remove('dark');
+        themeToggleIcon.innerText = "🌙";
+        themeToggleText.innerText = "Mörkt läge";
+        if (themeMeta) themeMeta.setAttribute('content', '#faf8f5');
+        if (showFeedback) showToast("Ljust läge aktiverat ☀️", "☀️");
+      }
+      localStorage.setItem('irene_theme', theme);
+    }
+
+    const currentTheme = localStorage.getItem('irene_theme') || 'light';
+    applyTheme(currentTheme, false);
+
+    themeToggleBtn.addEventListener("click", () => {
+      const isDark = document.documentElement.classList.contains('dark');
+      applyTheme(isDark ? 'light' : 'dark', true);
+    });
+
+    // MODE SWITCHING (SHARP vs TEST)
     const sharpBtn = document.getElementById("modeSharpBtn");
     const testBtn = document.getElementById("modeTestBtn");
     const testBanner = document.getElementById("testModeBanner");
@@ -946,28 +1010,28 @@
       currentMode = mode;
       if (mode === 'sharp') {
         sharpBtn.className = "px-3 py-1.5 rounded-xl font-bold transition flex items-center gap-1.5 bg-emerald-600 text-white shadow-sm";
-        testBtn.className = "px-3 py-1.5 rounded-xl font-semibold text-slate-400 hover:text-amber-300 transition flex items-center gap-1.5";
+        testBtn.className = "px-3 py-1.5 rounded-xl font-semibold text-slate-600 dark:text-slate-400 hover:text-amber-600 dark:hover:text-amber-300 transition flex items-center gap-1.5";
         testBanner.classList.add("hidden");
         sharpBar.classList.remove("hidden");
         testBar.classList.add("hidden");
         clearLogBtn.classList.add("hidden");
         headerDot.className = "w-3 h-3 rounded-full bg-emerald-500 animate-pulse";
         headerLabel.innerText = "SKARPT LÄGE";
-        headerLabel.className = "text-[10px] uppercase tracking-wider text-slate-400 font-bold";
+        headerLabel.className = "text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-bold";
         historySub.innerText = "Officiell historiklogg från molndatabasen.";
         allowFreeClicking = false;
         document.getElementById("freeClickToggle").checked = false;
         showToast("Växlat till Skarpt läge (Irenes officiella kam)", "🟢");
       } else {
         testBtn.className = "px-3 py-1.5 rounded-xl font-bold transition flex items-center gap-1.5 bg-amber-500 text-slate-950 shadow-sm";
-        sharpBtn.className = "px-3 py-1.5 rounded-xl font-semibold text-slate-400 hover:text-emerald-400 transition flex items-center gap-1.5";
+        sharpBtn.className = "px-3 py-1.5 rounded-xl font-semibold text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition flex items-center gap-1.5";
         testBanner.classList.remove("hidden");
         sharpBar.classList.add("hidden");
         testBar.classList.remove("hidden");
         clearLogBtn.classList.remove("hidden");
         headerDot.className = "w-3 h-3 rounded-full bg-amber-400 animate-ping";
         headerLabel.innerText = "TESTLÄGE (SANDLÅDA)";
-        headerLabel.className = "text-[10px] uppercase tracking-wider text-amber-400 font-bold";
+        headerLabel.className = "text-[10px] uppercase tracking-wider text-amber-600 dark:text-amber-400 font-bold";
         historySub.innerText = "Testlogg för sandlådan (påverkar inte Irene).";
         showToast("Växlat till Testläge (Sandlåda)", "🧪");
       }
