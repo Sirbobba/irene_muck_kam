@@ -63,21 +63,44 @@
     <span id="toastMsg" class="font-medium">Meddelande</span>
   </div>
 
-  <div class="max-w-4xl mx-auto space-y-6">
+  <div class="max-w-4xl mx-auto space-y-5">
     
-    <!-- Top Sync & Apple Banner -->
-    <div class="flex flex-wrap items-center justify-between gap-3 px-1 text-xs text-slate-400">
-      <div class="flex items-center gap-2">
-        <span id="dbStatusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-        <span id="dbStatusText" class="font-medium text-emerald-400">Ansluten till Supabase Cloud (Live Realtime)</span>
+    <!-- Top Bar: Mode Switcher & Cloud Status -->
+    <div class="flex flex-wrap items-center justify-between gap-3 px-1 text-xs">
+      
+      <!-- Mode Toggle Badge -->
+      <div class="flex items-center gap-2 bg-slate-900/90 p-1.5 rounded-2xl border border-slate-800">
+        <button id="modeSharpBtn" class="px-3 py-1 rounded-xl font-bold transition flex items-center gap-1.5 bg-emerald-600 text-white shadow-sm">
+          <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+          <span>Skarpt läge (Officiell)</span>
+        </button>
+        <button id="modeTestBtn" class="px-3 py-1 rounded-xl font-semibold text-slate-400 hover:text-amber-300 transition flex items-center gap-1.5">
+          <span>🧪</span>
+          <span>Testläge (Sandlåda)</span>
+        </button>
       </div>
 
-      <!-- Add to home screen hint for Apple Safari -->
-      <div class="hidden sm:flex items-center gap-1.5 text-slate-400 text-[11px]">
-        <span>🍎 För iPhone/iPad: Tryck</span>
-        <span class="px-1.5 py-0.5 bg-slate-800 rounded border border-slate-700 font-mono">Dela ⎋</span>
-        <span>→ <strong>"Lägg till på hemskärmen"</strong></span>
+      <!-- Cloud Status -->
+      <div class="flex items-center gap-2 text-slate-400 text-[11px]">
+        <span id="dbStatusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+        <span id="dbStatusText" class="text-emerald-400 font-medium">Supabase Realtime Live</span>
       </div>
+    </div>
+
+    <!-- TEST MODE WARNING BANNER (Only visible in test mode) -->
+    <div id="testModeBanner" class="hidden p-4 rounded-3xl bg-gradient-to-r from-amber-950/80 via-yellow-950/80 to-amber-950/80 border-2 border-amber-500/50 text-amber-200 shadow-xl flex items-center justify-between flex-wrap gap-3">
+      <div class="flex items-center gap-3">
+        <span class="text-2xl">🧪</span>
+        <div>
+          <div class="font-black text-sm text-amber-300 uppercase tracking-wider">Du är i Testläget / Sandlådan</div>
+          <div class="text-xs text-amber-200/90 mt-0.5">
+            Här kan du leka, provknäcka tänder och skriva anteckningar fritt. <strong>Inget här påverkar Irenes officiella pensionskam!</strong>
+          </div>
+        </div>
+      </div>
+      <button id="exitTestBtn" class="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow transition">
+        Gå tillbaka till Skarpt läge ➔
+      </button>
     </div>
 
     <!-- Header Banner -->
@@ -94,32 +117,32 @@
             Irenes Muckarkam 🪮
           </h1>
           <p class="text-slate-400 text-sm md:text-base mt-1">
-            En tand för varje avverkad vecka! Frihetsmål: <span class="font-bold text-slate-200">15 oktober 2027</span>
+            En tand för varje avverkad arbetsvecka! Frihetsmål: <span class="font-bold text-slate-200">15 oktober 2027</span>
           </p>
         </div>
 
-        <!-- Clock & sharp status badge -->
+        <!-- Clock badge -->
         <div class="flex items-center gap-3 bg-slate-900/80 px-4 py-2.5 rounded-2xl border border-slate-800 shadow-sm self-start md:self-auto">
-          <div id="modeStatusDot" class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></div>
+          <div id="headerStatusDot" class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></div>
           <div>
-            <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold" id="clockHeaderLabel">REALTID (SKARPT LÄGE)</div>
+            <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold" id="clockHeaderLabel">SKARPT LÄGE</div>
             <div id="liveClock" class="text-xs font-mono font-bold text-slate-200">--:--:--</div>
           </div>
         </div>
       </div>
 
-      <!-- Pre-start banner (shown if today is before 15 Oct 2026 in real-time) -->
+      <!-- Pre-start notice -->
       <div id="preStartBanner" class="mt-4 p-3.5 bg-amber-950/40 border border-amber-700/40 rounded-2xl flex items-center gap-3 text-xs text-amber-200">
         <span class="text-2xl">⏳</span>
         <div>
           <strong class="font-bold">Uppladdning inför sista året!</strong>
           <span id="daysToStartText"> Nedräkningen startar den 15 oktober 2026.</span>
-          Alla ändringar du gör synkas direkt mellan iPhone, iPad och PC via din databas.
+          Alla 52 tänder är intakta och låsta tills respektive vecka avverkats i verkligheten.
         </div>
       </div>
     </header>
 
-    <!-- The 52-Week Digital Comb (Centerpiece!) -->
+    <!-- The 52-Week Digital Comb -->
     <div class="glass-card rounded-3xl p-6 md:p-8 shadow-2xl space-y-4">
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-slate-700/80 pb-3">
         <div>
@@ -127,11 +150,11 @@
             <span>🪮</span> Den 52-Tandade Muckarkammen
           </h2>
           <p class="text-xs text-slate-400 mt-0.5">
-            Varje tand motsvarar 1 arbetsvecka. <strong>Låses upp på fredagar kl 17:00</strong> när veckan är klar.
+            Varje tand = 1 hel arbetsvecka. <strong>Låses upp på fredagar kl 17:00</strong> när veckan är slut.
           </p>
         </div>
 
-        <!-- Legend / Status -->
+        <!-- Legend -->
         <div class="flex items-center gap-3 text-[11px] font-medium text-slate-300">
           <span class="inline-flex items-center gap-1.5">
             <span class="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-sm animate-pulse"></span> Redo att brytas!
@@ -145,7 +168,7 @@
         </div>
       </div>
 
-      <!-- Quick Comb Stat Summary -->
+      <!-- Stat Summary -->
       <div class="grid grid-cols-3 gap-3 text-center py-1">
         <div class="p-3 bg-amber-950/30 rounded-2xl border border-amber-800/40">
           <div class="text-[10px] uppercase font-bold text-amber-300">Veckor brutna</div>
@@ -163,7 +186,6 @@
 
       <!-- Comb Graphic Box -->
       <div class="p-4 md:p-6 bg-gradient-to-b from-stone-900 to-amber-950 rounded-2xl shadow-2xl overflow-hidden border border-amber-800/30">
-        <!-- Spine of comb -->
         <div class="h-10 bg-gradient-to-r from-amber-700 via-yellow-600 to-amber-800 rounded-t-xl border-b-2 border-amber-950 flex items-center px-4 justify-between shadow-lg">
           <span class="text-xs font-black tracking-widest text-amber-100 uppercase font-mono flex items-center gap-2">
             <span>★</span> IRENE • 52 VECKORS MUCKARKAM 2026-2027 <span>★</span>
@@ -171,9 +193,8 @@
           <span class="text-[11px] font-bold text-amber-200/90 font-mono tracking-wider">PENSION 15 OKT 2027</span>
         </div>
 
-        <!-- 52 Teeth Scroll/Grid Area -->
         <div id="combTeethContainer" class="flex gap-1 pt-1.5 overflow-x-auto custom-scrollbar pb-3 min-h-[125px] items-start select-none">
-          <!-- 52 teeth will be generated here -->
+          <!-- 52 teeth -->
         </div>
 
         <div class="flex items-center justify-between text-[10px] text-amber-300/70 font-mono pt-1">
@@ -183,63 +204,63 @@
         </div>
       </div>
 
-      <!-- Action & Test Controls Bar -->
-      <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2 bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
+      <!-- Action Area: SHARP vs TEST CONTROLS -->
+      <div class="pt-2">
         
-        <!-- Left: The REAL Friday Button vs TEST Button -->
-        <div class="flex flex-wrap items-center gap-2.5">
-          <!-- The REAL Button -->
+        <!-- SHARP CONTROLS (Only visible in Skarpt läge) -->
+        <div id="sharpControlsBar" class="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 flex items-center justify-between gap-3">
           <button id="breakNextReadyBtn" class="px-5 py-3 rounded-xl bg-slate-800 border border-slate-700 text-slate-400 font-bold text-sm flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed transition">
             <span>🔒</span> Knäck förverkad vecka (Skarpt)
           </button>
-
-          <!-- TEST Button -->
-          <button id="testBreakBtn" class="px-4 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-600 hover:to-rose-600 text-white font-bold shadow-md shadow-rose-500/20 active:scale-95 transition flex items-center gap-1.5 text-xs">
-            <span>🧪</span> Provknäck en tand (Test)
-          </button>
+          <span class="text-xs text-slate-500 italic">
+            I skarpt läge kan du bara bryta veckor som faktiskt passerat i verkligheten.
+          </span>
         </div>
 
-        <!-- Right: Free-click toggle & Reset -->
-        <div class="flex items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-800">
-          <label class="flex items-center gap-2 cursor-pointer select-none text-xs font-medium text-slate-300 hover:text-white transition">
-            <input type="checkbox" id="freeClickToggle" class="w-4 h-4 rounded accent-amber-500 cursor-pointer">
-            <span>Fri knäckning i kammen</span>
-          </label>
-
+        <!-- TEST CONTROLS (Only visible in Testläge) -->
+        <div id="testControlsBar" class="hidden bg-amber-950/40 p-4 rounded-2xl border border-amber-600/40 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+          <div class="flex flex-wrap items-center gap-2.5">
+            <button id="testBreakBtn" class="px-5 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-600 hover:to-rose-600 text-white font-bold shadow-md shadow-rose-500/20 active:scale-95 transition flex items-center gap-1.5 text-xs">
+              <span>🧪</span> Provknäck en tand (Test)
+            </button>
+            <label class="flex items-center gap-2 cursor-pointer select-none text-xs font-medium text-amber-300 hover:text-white transition px-2">
+              <input type="checkbox" id="freeClickToggle" class="w-4 h-4 rounded accent-amber-500 cursor-pointer">
+              <span>Fri klickning på alla tänder</span>
+            </label>
+          </div>
           <button id="resetTeethBtn" class="px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white text-xs font-semibold transition">
-            Återställ kammen
+            Återställ testkammen
           </button>
         </div>
 
       </div>
     </div>
 
-    <!-- Muckarloggen / Historik-Tidslinje -->
+    <!-- Muckarloggen / Historik -->
     <div class="glass-card rounded-3xl p-6 md:p-8 shadow-2xl space-y-4">
       <div class="flex items-center justify-between flex-wrap gap-2 border-b border-slate-700/80 pb-3">
         <div>
           <h2 class="text-xl font-black text-white flex items-center gap-2">
             <span>📖</span> Irenes Muckarlogg & Historik
           </h2>
-          <p class="text-xs text-slate-400 mt-0.5">
-            Sparat i molndatabasen med exakt datum, klockslag och kommentar!
+          <p class="text-xs text-slate-400 mt-0.5" id="historySubtitle">
+            Officiell historiklogg från molndatabasen.
           </p>
         </div>
-        <button id="clearLogBtn" class="text-xs text-slate-500 hover:text-rose-400 transition">
-          Rensa loggen
-        </button>
+        <div class="flex items-center gap-2">
+          <button id="clearLogBtn" class="hidden text-xs text-slate-500 hover:text-rose-400 transition">
+            Rensa testlogg
+          </button>
+        </div>
       </div>
 
-      <!-- History entries container -->
       <div id="historyLogContainer" class="space-y-2.5 max-h-72 overflow-y-auto custom-scrollbar pr-1">
-        <!-- Dynamically rendered -->
+        <!-- History entries -->
       </div>
     </div>
 
     <!-- Main Stats Row -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      
-      <!-- Workdays remaining -->
       <div class="glass-card rounded-2xl p-5 shadow-lg flex items-center gap-4">
         <div class="w-12 h-12 rounded-2xl bg-rose-900/40 text-rose-400 flex items-center justify-center text-2xl font-bold">
           💼
@@ -251,7 +272,6 @@
         </div>
       </div>
 
-      <!-- Monday Counter -->
       <div class="glass-card rounded-2xl p-5 shadow-lg flex items-center gap-4">
         <div class="w-12 h-12 rounded-2xl bg-indigo-900/40 text-indigo-400 flex items-center justify-center text-2xl font-bold">
           📅
@@ -263,7 +283,6 @@
         </div>
       </div>
 
-      <!-- Coffee Cups Left -->
       <div class="glass-card rounded-2xl p-5 shadow-lg flex items-center gap-4">
         <div class="w-12 h-12 rounded-2xl bg-amber-900/40 text-amber-400 flex items-center justify-center text-2xl font-bold">
           ☕
@@ -274,7 +293,6 @@
           <span class="text-[11px] text-slate-400">Räknat på 2 koppar/arbetsdag</span>
         </div>
       </div>
-
     </div>
 
     <!-- Vacation Slider -->
@@ -298,13 +316,13 @@
 
     <!-- Footer -->
     <footer class="text-center text-xs text-slate-500 py-4 space-y-1">
-      <p>Byggd med kärlek för Irene • 15 oktober 2026 till 15 oktober 2027</p>
+      <p>Byggd för Irene • 15 oktober 2026 till 15 oktober 2027</p>
       <p class="text-[11px]">Synkad via Supabase PostgreSQL Cloud med Realtime live-feed.</p>
     </footer>
 
   </div>
 
-  <!-- Note Input Modal (appears when a tooth is broken!) -->
+  <!-- Note Input Modal -->
   <div id="noteModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
     <div class="bg-slate-900 border border-amber-600/40 rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl transform scale-95 transition-transform duration-300" id="noteModalBox">
       <div class="text-center space-y-1">
@@ -341,7 +359,7 @@
     const SUPABASE_KEY = "sb_publishable_DUJZBhEA4duwZ2Dta3sjRg_VGAoKa_B";
     const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
-    // Audio synthesizer for "crack/snap" sound
+    // AUDIO SYNTH
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function playCombSnapSound() {
       try {
@@ -377,7 +395,6 @@
       } catch (e) {}
     }
 
-    // Swedish Red Days on weekdays for 15 Oct 2026 to 15 Oct 2027
     const swedishHolidays = new Set([
       "2026-12-24", "2026-12-25", "2026-12-31",
       "2027-01-01", "2027-01-06", "2027-03-26", "2027-03-29", 
@@ -388,7 +405,6 @@
     const END_DATE = new Date("2027-10-15T00:00:00");
     const TOTAL_WEEKS = 52;
 
-    // Weeks generator
     const weeks = [];
     let curWeekStart = new Date(START_DATE);
     for (let i = 1; i <= TOTAL_WEEKS; i++) {
@@ -404,7 +420,13 @@
       curWeekStart.setDate(curWeekStart.getDate() + 7);
     }
 
-    // State
+    // ACTIVE MODE: 'sharp' (profile: 'irene') vs 'test' (profile: 'test_demo')
+    let currentMode = 'sharp'; 
+
+    function getActiveProfileId() {
+      return currentMode === 'sharp' ? 'irene' : 'test_demo';
+    }
+
     let brokenWeeks = new Set();
     let historyLog = [];
     let vacationDays = 25;
@@ -423,71 +445,68 @@
       }, 2600);
     }
 
-    // SUPABASE DB SYNC
-    async function loadFromSupabase() {
+    // LOAD PROFILE DATA
+    async function loadCurrentProfile() {
+      const profileId = getActiveProfileId();
       try {
         if (!supabaseClient) return;
         const { data, error } = await supabaseClient
           .from('muckarkam')
           .select('*')
-          .eq('id', 'irene')
+          .eq('id', profileId)
           .single();
 
         if (data) {
           brokenWeeks = new Set(data.broken_weeks || []);
           historyLog = data.history_log || [];
           vacationDays = data.vacation_days ?? 25;
-          renderTeeth();
-          renderHistory();
-          updateMetrics();
+        } else {
+          brokenWeeks = new Set();
+          historyLog = [];
+          vacationDays = 25;
         }
+        renderTeeth();
+        renderHistory();
+        updateMetrics();
       } catch (err) {
-        console.error("Supabase load error:", err);
+        console.error("Load error:", err);
       }
     }
 
-    async function saveToSupabase() {
+    async function saveCurrentProfile() {
+      const profileId = getActiveProfileId();
       try {
         if (!supabaseClient) return;
         await supabaseClient
           .from('muckarkam')
-          .update({
+          .upsert({
+            id: profileId,
             broken_weeks: Array.from(brokenWeeks),
             history_log: historyLog,
             vacation_days: vacationDays,
             updated_at: new Date().toISOString()
-          })
-          .eq('id', 'irene');
+          });
       } catch (err) {
-        console.error("Supabase save error:", err);
+        console.error("Save error:", err);
       }
     }
 
-    // SUPABASE REALTIME SUBSCRIPTION
+    // REALTIME LISTENER
     function subscribeToRealtime() {
       if (!supabaseClient) return;
       supabaseClient
         .channel('public:muckarkam')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'muckarkam' }, (payload) => {
-          if (payload.new && payload.new.id === 'irene') {
+          if (payload.new && payload.new.id === getActiveProfileId()) {
             brokenWeeks = new Set(payload.new.broken_weeks || []);
             historyLog = payload.new.history_log || [];
             vacationDays = payload.new.vacation_days ?? 25;
             renderTeeth();
             renderHistory();
             updateMetrics();
-            showToast("Synkad med molnet! 🔄", "⚡");
           }
         })
-        .subscribe((status) => {
-          const dot = document.getElementById("dbStatusDot");
-          const text = document.getElementById("dbStatusText");
-          if (status === 'SUBSCRIBED') {
-            dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse";
-            text.className = "font-medium text-emerald-400";
-            text.innerText = "Ansluten till Supabase Cloud (Live Realtime)";
-          }
-        });
+        .subscribe();
     }
 
     function calculateWorkdays(fromDate, toDate) {
@@ -532,11 +551,9 @@
         tooth.id = `tooth-${w.weekNum}`;
 
         if (isBroken) {
-          // ALREADY BROKEN (Stub)
           tooth.className = "w-2.5 md:w-3 h-5 md:h-6 bg-amber-950/60 border-t-2 border-stone-800 rounded-b-sm cursor-default opacity-40 shadow-inner";
-          tooth.title = `${w.label} - Redan avverkad och bruten! ✂️`;
+          tooth.title = `${w.label} - Bruten tand ✂️`;
         } else if (isPastInReality) {
-          // COMPLETED IN REALITY: READY TO BREAK
           readyCount++;
           tooth.className = "w-2.5 md:w-3 h-16 md:h-20 bg-gradient-to-b from-yellow-300 via-amber-400 to-amber-500 rounded-b cursor-pointer transition transform hover:-translate-y-1.5 hover:brightness-125 shadow-lg ring-2 ring-yellow-400/80 animate-pulse";
           tooth.title = `${w.label} - Veckan är avklarad! Klicka för att bryta tanden! ✨`;
@@ -544,16 +561,14 @@
           tooth.addEventListener("click", () => {
             promptBreakTooth(w.weekNum, tooth);
           });
-        } else if (allowFreeClicking) {
-          // FREE CLICK TEST MODE
+        } else if (currentMode === 'test' && allowFreeClicking) {
           tooth.className = "w-2.5 md:w-3 h-16 md:h-20 bg-gradient-to-b from-amber-400 to-amber-600 rounded-b cursor-pointer hover:-translate-y-1 hover:brightness-125 shadow transition ring-1 ring-amber-400/50";
-          tooth.title = `${w.label} - Testläge aktivt: Klicka för att provknäcka! 🧪`;
+          tooth.title = `${w.label} - Testläge: Klicka för att provknäcka! 🧪`;
 
           tooth.addEventListener("click", () => {
             promptBreakTooth(w.weekNum, tooth);
           });
         } else if (isCurrentInReality) {
-          // CURRENT WEEK (in progress)
           tooth.className = "w-2.5 md:w-3 h-16 md:h-20 bg-gradient-to-b from-amber-600 via-amber-700 to-amber-800 rounded-b cursor-pointer opacity-85 shadow border border-amber-500/40";
           tooth.title = `${w.label} - Pågår just nu! Kan brytas på fredag kl 17:00.`;
 
@@ -564,7 +579,6 @@
             showToast(`Vecka ${w.weekNum} pågår just nu! Jobba klart veckan innan du bryter den! 💪`, "⏳");
           });
         } else {
-          // FUTURE LOCKED TOOTH
           tooth.className = "w-2.5 md:w-3 h-16 md:h-20 bg-gradient-to-b from-stone-800 via-stone-900 to-amber-950 rounded-b cursor-pointer opacity-50 hover:opacity-75 transition";
           tooth.title = `${w.label} - Framtida vecka. Låst!`;
 
@@ -576,7 +590,6 @@
           });
         }
 
-        // Label underneath
         const label = document.createElement("span");
         label.className = "text-[8px] font-mono text-amber-200/50 mt-1 select-none";
         label.innerText = w.weekNum % 5 === 0 || w.weekNum === 1 || w.weekNum === 52 ? w.weekNum : "•";
@@ -586,12 +599,10 @@
         container.appendChild(toothWrapper);
       });
 
-      // Update counters
       document.getElementById("statBrokenWeeks").innerText = brokenCount;
       document.getElementById("statReadyWeeks").innerText = readyCount;
       document.getElementById("statWeeksLeft").innerText = Math.max(0, TOTAL_WEEKS - brokenCount);
 
-      // Real-time button
       const nextBtn = document.getElementById("breakNextReadyBtn");
       nextBtn.disabled = readyCount === 0;
       if (readyCount > 0) {
@@ -612,7 +623,9 @@
       if (historyLog.length === 0) {
         container.innerHTML = `
           <div class="text-center py-6 text-slate-500 text-xs italic">
-            Inga knäckta veckor loggade än. När en tand knäcks sparas datum och minnesanteckning här!
+            ${currentMode === 'sharp' 
+              ? 'Inga avverkade veckor än. När Irene knäcker en tand på fredagar sparas notisen här i den officiella loggboken!' 
+              : 'Testloggen är tom. Klicka på Provknäck för att testa!'}
           </div>
         `;
         return;
@@ -672,7 +685,6 @@
 
       setTimeout(() => {
         brokenWeeks.add(weekNum);
-        
         const now = new Date();
         historyLog.push({
           weekNum,
@@ -682,8 +694,8 @@
           emoji: emoji
         });
 
-        saveToSupabase();
-        showToast(`Vecka ${weekNum} är knäckt och sparad i molnet! 🎉`, "✂️");
+        saveCurrentProfile();
+        showToast(`Vecka ${weekNum} är bruten och sparad! 🎉`, "✂️");
         renderTeeth();
         renderHistory();
       }, 550);
@@ -729,61 +741,86 @@
       }
     }
 
-    document.getElementById("breakNextReadyBtn").addEventListener("click", () => {
-      const now = new Date();
-      const nextReadyWeek = weeks.find(w => now >= w.endDate && !brokenWeeks.has(w.weekNum));
-      if (nextReadyWeek) {
-        const el = document.getElementById(`tooth-${nextReadyWeek.weekNum}`);
-        promptBreakTooth(nextReadyWeek.weekNum, el);
-      }
-    });
+    // MODE SWITCHING LOGIC (SHARP VS TEST)
+    const sharpBtn = document.getElementById("modeSharpBtn");
+    const testBtn = document.getElementById("modeTestBtn");
+    const testBanner = document.getElementById("testModeBanner");
+    const exitTestBtn = document.getElementById("exitTestBtn");
+    const sharpBar = document.getElementById("sharpControlsBar");
+    const testBar = document.getElementById("testControlsBar");
+    const headerDot = document.getElementById("headerStatusDot");
+    const headerLabel = document.getElementById("clockHeaderLabel");
+    const clearLogBtn = document.getElementById("clearLogBtn");
+    const historySub = document.getElementById("historySubtitle");
 
-    // Test Break button
+    function setMode(mode) {
+      currentMode = mode;
+      if (mode === 'sharp') {
+        sharpBtn.className = "px-3 py-1 rounded-xl font-bold transition flex items-center gap-1.5 bg-emerald-600 text-white shadow-sm";
+        testBtn.className = "px-3 py-1 rounded-xl font-semibold text-slate-400 hover:text-amber-300 transition flex items-center gap-1.5";
+        testBanner.classList.add("hidden");
+        sharpBar.classList.remove("hidden");
+        testBar.classList.add("hidden");
+        clearLogBtn.classList.add("hidden");
+        headerDot.className = "w-3 h-3 rounded-full bg-emerald-500 animate-pulse";
+        headerLabel.innerText = "SKARPT LÄGE";
+        headerLabel.className = "text-[10px] uppercase tracking-wider text-slate-400 font-bold";
+        historySub.innerText = "Officiell historiklogg från molndatabasen.";
+        allowFreeClicking = false;
+        document.getElementById("freeClickToggle").checked = false;
+        showToast("Växlat till Skarpt läge (Irenes officiella kam)", "🟢");
+      } else {
+        testBtn.className = "px-3 py-1 rounded-xl font-bold transition flex items-center gap-1.5 bg-amber-500 text-slate-950 shadow-sm";
+        sharpBtn.className = "px-3 py-1 rounded-xl font-semibold text-slate-400 hover:text-emerald-400 transition flex items-center gap-1.5";
+        testBanner.classList.remove("hidden");
+        sharpBar.classList.add("hidden");
+        testBar.classList.remove("hidden");
+        clearLogBtn.classList.remove("hidden");
+        headerDot.className = "w-3 h-3 rounded-full bg-amber-400 animate-ping";
+        headerLabel.innerText = "TESTLÄGE (SANDLÅDA)";
+        headerLabel.className = "text-[10px] uppercase tracking-wider text-amber-400 font-bold";
+        historySub.innerText = "Testlogg för sandlådan (påverkar inte Irene).";
+        showToast("Växlat till Testläge (Sandlåda)", "🧪");
+      }
+      loadCurrentProfile();
+    }
+
+    sharpBtn.addEventListener("click", () => setMode('sharp'));
+    testBtn.addEventListener("click", () => setMode('test'));
+    exitTestBtn.addEventListener("click", () => setMode('sharp'));
+
+    // Test break button
     document.getElementById("testBreakBtn").addEventListener("click", () => {
       const nextUnbrokenWeek = weeks.find(w => !brokenWeeks.has(w.weekNum));
       if (nextUnbrokenWeek) {
         const el = document.getElementById(`tooth-${nextUnbrokenWeek.weekNum}`);
         promptBreakTooth(nextUnbrokenWeek.weekNum, el);
       } else {
-        showToast("Alla 52 tänder är redan brutna! Klicka på Återställ för att börja om.", "🎉");
+        showToast("Alla 52 tänder är brutna i testläget! Återställ för att börja om.", "🎉");
       }
     });
 
-    // Free click toggle
-    const freeToggle = document.getElementById("freeClickToggle");
-    freeToggle.addEventListener("change", (e) => {
+    // Free click toggle in test mode
+    document.getElementById("freeClickToggle").addEventListener("change", (e) => {
       allowFreeClicking = e.target.checked;
-      const modeDot = document.getElementById("modeStatusDot");
-      const modeLabel = document.getElementById("clockHeaderLabel");
-      if (allowFreeClicking) {
-        modeDot.className = "w-3 h-3 rounded-full bg-amber-400 animate-ping";
-        modeLabel.innerText = "TESTLÄGE: FRI KNÄCKNING PÅ";
-        modeLabel.classList.add("text-amber-400");
-        showToast("Fri knäckning aktiv! Klicka fritt på valfri tand i kammen!", "🧪");
-      } else {
-        modeDot.className = "w-3 h-3 rounded-full bg-emerald-500 animate-pulse";
-        modeLabel.innerText = "REALTID (SKARPT LÄGE)";
-        modeLabel.classList.remove("text-amber-400");
-        showToast("Skarpt läge aktiverat igen.", "🔒");
-      }
       renderTeeth();
     });
 
-    // Reset button
+    // Reset button in test mode
     document.getElementById("resetTeethBtn").addEventListener("click", () => {
-      if (confirm("Vill du återställa kammen till 52 intakta tänder i molnet?")) {
+      if (confirm("Vill du återställa testkammen till 52 intakta tänder?")) {
         brokenWeeks.clear();
-        saveToSupabase();
-        showToast("Kammen har återställts i molnet!", "🔄");
+        saveCurrentProfile();
+        showToast("Testkammen har återställts!", "🔄");
         renderTeeth();
       }
     });
 
-    // Clear history
+    // Clear history in test mode
     document.getElementById("clearLogBtn").addEventListener("click", () => {
-      if (confirm("Vill du rensa historikloggen i molnet?")) {
+      if (confirm("Vill du rensa testloggen?")) {
         historyLog = [];
-        saveToSupabase();
+        saveCurrentProfile();
         renderHistory();
       }
     });
@@ -791,11 +828,11 @@
     // Vacation slider
     document.getElementById("vacationSlider").addEventListener("input", (e) => {
       vacationDays = parseInt(e.target.value, 10);
-      saveToSupabase();
+      saveCurrentProfile();
       updateMetrics();
     });
 
-    // Clock
+    // Clock updater
     setInterval(() => {
       const now = new Date();
       document.getElementById("liveClock").innerText = now.toLocaleTimeString('sv-SE');
@@ -856,10 +893,8 @@
     }
     animateConfetti();
 
-    // Boot: Load from Supabase and listen to live changes!
-    renderTeeth();
-    renderHistory();
-    loadFromSupabase();
+    // Start in sharp mode
+    setMode('sharp');
     subscribeToRealtime();
   </script>
 </body>
