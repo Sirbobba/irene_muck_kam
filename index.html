@@ -11,7 +11,7 @@
   <meta name="apple-mobile-web-app-title" content="Irene Muck">
   <meta name="theme-color" content="#020617">
   
-  <!-- Inline Apple Touch Icon (Golden Comb on Dark Background) -->
+  <!-- Inline Apple Touch Icon -->
   <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230f172a'/><path d='M20 30 h60 v15 h-60 z' fill='%23f59e0b'/><path d='M25 45 v30 M33 45 v30 M41 45 v30 M49 45 v30 M57 45 v30 M65 45 v30 M73 45 v30' stroke='%23fbbf24' stroke-width='4' stroke-linecap='round'/></svg>">
 
   <!-- Tailwind CSS -->
@@ -43,14 +43,14 @@
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
     .custom-scrollbar::-webkit-scrollbar {
-      height: 7px;
+      height: 8px;
     }
     .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: rgba(217, 119, 6, 0.5);
+      background: #d97706;
       border-radius: 999px;
     }
     .custom-scrollbar::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.2);
+      background: rgba(15, 23, 42, 0.6);
     }
   </style>
 </head>
@@ -87,14 +87,14 @@
       </div>
     </div>
 
-    <!-- TEST MODE WARNING BANNER (Only visible in test mode) -->
+    <!-- TEST MODE WARNING BANNER -->
     <div id="testModeBanner" class="hidden p-4 rounded-3xl bg-gradient-to-r from-amber-950/80 via-yellow-950/80 to-amber-950/80 border-2 border-amber-500/50 text-amber-200 shadow-xl flex items-center justify-between flex-wrap gap-3">
       <div class="flex items-center gap-3">
         <span class="text-2xl">🧪</span>
         <div>
           <div class="font-black text-sm text-amber-300 uppercase tracking-wider">Du är i Testläget / Sandlådan</div>
           <div class="text-xs text-amber-200/90 mt-0.5">
-            Här kan du leka, provknäcka tänder och skriva anteckningar fritt. <strong>Inget här påverkar Irenes officiella pensionskam!</strong>
+            Här kan du leka och provknäcka tänder. <strong>Inget här påverkar Irenes officiella pensionskam!</strong>
           </div>
         </div>
       </div>
@@ -160,10 +160,10 @@
             <span class="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-sm animate-pulse"></span> Redo att brytas!
           </span>
           <span class="inline-flex items-center gap-1.5">
-            <span class="w-2.5 h-2.5 rounded-full bg-slate-600"></span> Bruten
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-600 border border-amber-400"></span> Intakt tand
           </span>
           <span class="inline-flex items-center gap-1.5">
-            <span class="w-2.5 h-2.5 rounded-full bg-stone-800 border border-stone-600"></span> Låst (framtid)
+            <span class="w-2.5 h-2.5 rounded-full bg-slate-700"></span> Avbruten stubbe
           </span>
         </div>
       </div>
@@ -185,39 +185,45 @@
       </div>
 
       <!-- Comb Graphic Box -->
-      <div class="p-4 md:p-6 bg-gradient-to-b from-stone-900 to-amber-950 rounded-2xl shadow-2xl overflow-hidden border border-amber-800/30">
-        <div class="h-10 bg-gradient-to-r from-amber-700 via-yellow-600 to-amber-800 rounded-t-xl border-b-2 border-amber-950 flex items-center px-4 justify-between shadow-lg">
-          <span class="text-xs font-black tracking-widest text-amber-100 uppercase font-mono flex items-center gap-2">
+      <div class="p-4 md:p-6 bg-slate-900 rounded-2xl shadow-2xl overflow-hidden border-2 border-amber-700/50">
+        
+        <!-- Comb Spine -->
+        <div class="h-11 bg-gradient-to-r from-amber-600 via-amber-500 to-amber-700 rounded-t-xl border-b-4 border-amber-950 flex items-center px-4 justify-between shadow-lg">
+          <span class="text-xs font-black tracking-widest text-amber-950 uppercase font-mono flex items-center gap-2">
             <span>★</span> IRENE • 52 VECKORS MUCKARKAM 2026-2027 <span>★</span>
           </span>
-          <span class="text-[11px] font-bold text-amber-200/90 font-mono tracking-wider">PENSION 15 OKT 2027</span>
+          <span class="text-[11px] font-bold text-amber-950 font-mono tracking-wider">PENSION 15 OKT 2027</span>
         </div>
 
-        <div id="combTeethContainer" class="flex gap-1 pt-1.5 overflow-x-auto custom-scrollbar pb-3 min-h-[125px] items-start select-none">
-          <!-- 52 teeth -->
+        <!-- 52 Teeth Container (Distinct background so teeth pop!) -->
+        <div class="bg-slate-950/90 rounded-b-xl p-3 border-x border-b border-amber-900/30">
+          <div id="combTeethContainer" class="flex gap-1.5 pt-1 overflow-x-auto custom-scrollbar pb-3 min-h-[135px] items-start select-none">
+            <!-- 52 teeth -->
+          </div>
+
+          <div class="flex items-center justify-between text-[11px] text-amber-400/90 font-mono pt-2 border-t border-slate-800">
+            <span>← V. 1 (15 Okt 2026)</span>
+            <span class="text-center italic text-amber-200/80 font-sans">Dra eller scrolla för att se alla 52 tänderna</span>
+            <span>V. 52 (15 Okt 2027) MUCK! →</span>
+          </div>
         </div>
 
-        <div class="flex items-center justify-between text-[10px] text-amber-300/70 font-mono pt-1">
-          <span>← V. 1 (15 Okt 2026)</span>
-          <span class="text-center italic text-amber-200/90 font-sans">Dra eller scrolla för att se alla 52 veckor</span>
-          <span>V. 52 (15 Okt 2027) MUCK! →</span>
-        </div>
       </div>
 
       <!-- Action Area: SHARP vs TEST CONTROLS -->
       <div class="pt-2">
         
-        <!-- SHARP CONTROLS (Only visible in Skarpt läge) -->
-        <div id="sharpControlsBar" class="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 flex items-center justify-between gap-3">
+        <!-- SHARP CONTROLS -->
+        <div id="sharpControlsBar" class="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
           <button id="breakNextReadyBtn" class="px-5 py-3 rounded-xl bg-slate-800 border border-slate-700 text-slate-400 font-bold text-sm flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed transition">
             <span>🔒</span> Knäck förverkad vecka (Skarpt)
           </button>
-          <span class="text-xs text-slate-500 italic">
-            I skarpt läge kan du bara bryta veckor som faktiskt passerat i verkligheten.
+          <span class="text-xs text-slate-400 italic">
+            I skarpt läge låses varje tand upp automatiskt på fredagar kl 17:00.
           </span>
         </div>
 
-        <!-- TEST CONTROLS (Only visible in Testläge) -->
+        <!-- TEST CONTROLS -->
         <div id="testControlsBar" class="hidden bg-amber-950/40 p-4 rounded-2xl border border-amber-600/40 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
           <div class="flex flex-wrap items-center gap-2.5">
             <button id="testBreakBtn" class="px-5 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-600 hover:to-rose-600 text-white font-bold shadow-md shadow-rose-500/20 active:scale-95 transition flex items-center gap-1.5 text-xs">
@@ -420,7 +426,6 @@
       curWeekStart.setDate(curWeekStart.getDate() + 7);
     }
 
-    // ACTIVE MODE: 'sharp' (profile: 'irene') vs 'test' (profile: 'test_demo')
     let currentMode = 'sharp'; 
 
     function getActiveProfileId() {
@@ -445,7 +450,6 @@
       }, 2600);
     }
 
-    // LOAD PROFILE DATA
     async function loadCurrentProfile() {
       const profileId = getActiveProfileId();
       try {
@@ -491,7 +495,6 @@
       }
     }
 
-    // REALTIME LISTENER
     function subscribeToRealtime() {
       if (!supabaseClient) return;
       supabaseClient
@@ -531,6 +534,7 @@
       return { count, mondays };
     }
 
+    // TEETH RENDERING WITH CRISP VISIBILITY!
     function renderTeeth() {
       const container = document.getElementById("combTeethContainer");
       container.innerHTML = "";
@@ -551,25 +555,29 @@
         tooth.id = `tooth-${w.weekNum}`;
 
         if (isBroken) {
-          tooth.className = "w-2.5 md:w-3 h-5 md:h-6 bg-amber-950/60 border-t-2 border-stone-800 rounded-b-sm cursor-default opacity-40 shadow-inner";
-          tooth.title = `${w.label} - Bruten tand ✂️`;
+          // BROKEN TOOTH: Short stump
+          tooth.className = "w-2.5 md:w-3 h-5 md:h-6 bg-amber-950/40 border-t-2 border-stone-700 rounded-b-sm cursor-default opacity-30 shadow-inner";
+          tooth.title = `${w.label} - Avbruten tand ✂️`;
         } else if (isPastInReality) {
+          // READY TO BREAK: Bright golden glow!
           readyCount++;
-          tooth.className = "w-2.5 md:w-3 h-16 md:h-20 bg-gradient-to-b from-yellow-300 via-amber-400 to-amber-500 rounded-b cursor-pointer transition transform hover:-translate-y-1.5 hover:brightness-125 shadow-lg ring-2 ring-yellow-400/80 animate-pulse";
+          tooth.className = "w-2.5 md:w-3 h-16 md:h-20 bg-gradient-to-b from-yellow-200 via-yellow-400 to-amber-500 rounded-b-md cursor-pointer transition transform hover:-translate-y-1.5 hover:brightness-125 shadow-xl ring-2 ring-yellow-300 animate-pulse";
           tooth.title = `${w.label} - Veckan är avklarad! Klicka för att bryta tanden! ✨`;
 
           tooth.addEventListener("click", () => {
             promptBreakTooth(w.weekNum, tooth);
           });
         } else if (currentMode === 'test' && allowFreeClicking) {
-          tooth.className = "w-2.5 md:w-3 h-16 md:h-20 bg-gradient-to-b from-amber-400 to-amber-600 rounded-b cursor-pointer hover:-translate-y-1 hover:brightness-125 shadow transition ring-1 ring-amber-400/50";
+          // TEST FREE CLICKING
+          tooth.className = "w-2.5 md:w-3 h-16 md:h-20 bg-gradient-to-b from-yellow-300 via-amber-400 to-amber-500 rounded-b-md cursor-pointer hover:-translate-y-1 hover:brightness-125 shadow-md transition ring-1 ring-yellow-400";
           tooth.title = `${w.label} - Testläge: Klicka för att provknäcka! 🧪`;
 
           tooth.addEventListener("click", () => {
             promptBreakTooth(w.weekNum, tooth);
           });
         } else if (isCurrentInReality) {
-          tooth.className = "w-2.5 md:w-3 h-16 md:h-20 bg-gradient-to-b from-amber-600 via-amber-700 to-amber-800 rounded-b cursor-pointer opacity-85 shadow border border-amber-500/40";
+          // CURRENT WEEK (In progress)
+          tooth.className = "w-2.5 md:w-3 h-16 md:h-20 bg-gradient-to-b from-amber-400 via-amber-500 to-amber-600 rounded-b-md cursor-pointer opacity-90 shadow-md border-b-2 border-amber-300 ring-1 ring-amber-400/50";
           tooth.title = `${w.label} - Pågår just nu! Kan brytas på fredag kl 17:00.`;
 
           tooth.addEventListener("click", () => {
@@ -579,7 +587,8 @@
             showToast(`Vecka ${w.weekNum} pågår just nu! Jobba klart veckan innan du bryter den! 💪`, "⏳");
           });
         } else {
-          tooth.className = "w-2.5 md:w-3 h-16 md:h-20 bg-gradient-to-b from-stone-800 via-stone-900 to-amber-950 rounded-b cursor-pointer opacity-50 hover:opacity-75 transition";
+          // INTACT / LOCKED TEETH: CRISP, GLORIOUS WARM AMBER TEETH!
+          tooth.className = "w-2.5 md:w-3 h-16 md:h-20 bg-gradient-to-b from-amber-500 via-amber-600 to-amber-800 rounded-b-md cursor-pointer hover:brightness-110 shadow-md border-x border-amber-400/30 transition transform hover:-translate-y-0.5";
           tooth.title = `${w.label} - Framtida vecka. Låst!`;
 
           tooth.addEventListener("click", () => {
@@ -591,7 +600,7 @@
         }
 
         const label = document.createElement("span");
-        label.className = "text-[8px] font-mono text-amber-200/50 mt-1 select-none";
+        label.className = "text-[9px] font-mono font-bold text-amber-400/80 mt-1 select-none";
         label.innerText = w.weekNum % 5 === 0 || w.weekNum === 1 || w.weekNum === 52 ? w.weekNum : "•";
 
         toothWrapper.appendChild(tooth);
@@ -741,7 +750,7 @@
       }
     }
 
-    // MODE SWITCHING LOGIC (SHARP VS TEST)
+    // MODE SWITCHING LOGIC
     const sharpBtn = document.getElementById("modeSharpBtn");
     const testBtn = document.getElementById("modeTestBtn");
     const testBanner = document.getElementById("testModeBanner");
@@ -789,7 +798,6 @@
     testBtn.addEventListener("click", () => setMode('test'));
     exitTestBtn.addEventListener("click", () => setMode('sharp'));
 
-    // Test break button
     document.getElementById("testBreakBtn").addEventListener("click", () => {
       const nextUnbrokenWeek = weeks.find(w => !brokenWeeks.has(w.weekNum));
       if (nextUnbrokenWeek) {
@@ -800,13 +808,11 @@
       }
     });
 
-    // Free click toggle in test mode
     document.getElementById("freeClickToggle").addEventListener("change", (e) => {
       allowFreeClicking = e.target.checked;
       renderTeeth();
     });
 
-    // Reset button in test mode
     document.getElementById("resetTeethBtn").addEventListener("click", () => {
       if (confirm("Vill du återställa testkammen till 52 intakta tänder?")) {
         brokenWeeks.clear();
@@ -816,7 +822,6 @@
       }
     });
 
-    // Clear history in test mode
     document.getElementById("clearLogBtn").addEventListener("click", () => {
       if (confirm("Vill du rensa testloggen?")) {
         historyLog = [];
@@ -825,21 +830,18 @@
       }
     });
 
-    // Vacation slider
     document.getElementById("vacationSlider").addEventListener("input", (e) => {
       vacationDays = parseInt(e.target.value, 10);
       saveCurrentProfile();
       updateMetrics();
     });
 
-    // Clock updater
     setInterval(() => {
       const now = new Date();
       document.getElementById("liveClock").innerText = now.toLocaleTimeString('sv-SE');
     }, 1000);
     document.getElementById("liveClock").innerText = new Date().toLocaleTimeString('sv-SE');
 
-    // Confetti Engine
     const canvas = document.getElementById("confettiCanvas");
     const ctx = canvas.getContext("2d");
     let particles = [];
