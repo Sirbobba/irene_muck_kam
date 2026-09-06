@@ -3,6 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <!-- Disable aggressive browser caching -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
   <title>Irenes Muckarkam - 52 Veckor till Pension</title>
   
   <!-- Apple iOS / iPadOS PWA Support -->
@@ -46,11 +51,11 @@
       height: 8px;
     }
     .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: #d97706;
+      background: #f59e0b;
       border-radius: 999px;
     }
     .custom-scrollbar::-webkit-scrollbar-track {
-      background: rgba(15, 23, 42, 0.6);
+      background: rgba(15, 23, 42, 0.8);
     }
   </style>
 </head>
@@ -70,11 +75,11 @@
       
       <!-- Mode Toggle Badge -->
       <div class="flex items-center gap-2 bg-slate-900/90 p-1.5 rounded-2xl border border-slate-800">
-        <button id="modeSharpBtn" class="px-3 py-1 rounded-xl font-bold transition flex items-center gap-1.5 bg-emerald-600 text-white shadow-sm">
+        <button id="modeSharpBtn" class="px-3 py-1.5 rounded-xl font-bold transition flex items-center gap-1.5 bg-emerald-600 text-white shadow-sm">
           <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
           <span>Skarpt läge (Officiell)</span>
         </button>
-        <button id="modeTestBtn" class="px-3 py-1 rounded-xl font-semibold text-slate-400 hover:text-amber-300 transition flex items-center gap-1.5">
+        <button id="modeTestBtn" class="px-3 py-1.5 rounded-xl font-semibold text-slate-400 hover:text-amber-300 transition flex items-center gap-1.5">
           <span>🧪</span>
           <span>Testläge (Sandlåda)</span>
         </button>
@@ -88,7 +93,7 @@
     </div>
 
     <!-- TEST MODE WARNING BANNER -->
-    <div id="testModeBanner" class="hidden p-4 rounded-3xl bg-gradient-to-r from-amber-950/80 via-yellow-950/80 to-amber-950/80 border-2 border-amber-500/50 text-amber-200 shadow-xl flex items-center justify-between flex-wrap gap-3">
+    <div id="testModeBanner" class="hidden p-4 rounded-3xl bg-gradient-to-r from-amber-950/90 via-yellow-950/90 to-amber-950/90 border-2 border-amber-500 text-amber-200 shadow-xl flex items-center justify-between flex-wrap gap-3">
       <div class="flex items-center gap-3">
         <span class="text-2xl">🧪</span>
         <div>
@@ -157,13 +162,13 @@
         <!-- Legend -->
         <div class="flex items-center gap-3 text-[11px] font-medium text-slate-300">
           <span class="inline-flex items-center gap-1.5">
-            <span class="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-sm animate-pulse"></span> Redo att brytas!
+            <span class="w-3 h-3 rounded-sm bg-amber-400 shadow-sm border border-yellow-200 animate-pulse"></span> Intakt tand
           </span>
           <span class="inline-flex items-center gap-1.5">
-            <span class="w-2.5 h-2.5 rounded-full bg-amber-600 border border-amber-400"></span> Intakt tand
+            <span class="w-3 h-3 rounded-sm bg-yellow-300 ring-2 ring-yellow-400"></span> Redo att knäckas!
           </span>
           <span class="inline-flex items-center gap-1.5">
-            <span class="w-2.5 h-2.5 rounded-full bg-slate-700"></span> Avbruten stubbe
+            <span class="w-3 h-1.5 rounded-sm bg-stone-700"></span> Avbruten stubbe
           </span>
         </div>
       </div>
@@ -185,26 +190,28 @@
       </div>
 
       <!-- Comb Graphic Box -->
-      <div class="p-4 md:p-6 bg-slate-900 rounded-2xl shadow-2xl overflow-hidden border-2 border-amber-700/50">
+      <div class="p-4 md:p-6 bg-slate-900 rounded-3xl shadow-2xl overflow-hidden border-2 border-amber-500/40">
         
         <!-- Comb Spine -->
-        <div class="h-11 bg-gradient-to-r from-amber-600 via-amber-500 to-amber-700 rounded-t-xl border-b-4 border-amber-950 flex items-center px-4 justify-between shadow-lg">
-          <span class="text-xs font-black tracking-widest text-amber-950 uppercase font-mono flex items-center gap-2">
+        <div class="h-12 bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 rounded-t-2xl border-b-4 border-amber-950 flex items-center px-4 justify-between shadow-lg">
+          <span class="text-xs md:text-sm font-black tracking-widest text-slate-950 uppercase font-mono flex items-center gap-2">
             <span>★</span> IRENE • 52 VECKORS MUCKARKAM 2026-2027 <span>★</span>
           </span>
-          <span class="text-[11px] font-bold text-amber-950 font-mono tracking-wider">PENSION 15 OKT 2027</span>
+          <span class="text-[11px] md:text-xs font-black text-slate-950 font-mono tracking-wider bg-amber-300/60 px-2 py-0.5 rounded border border-amber-900/30">
+            PENSION 15 OKT 2027
+          </span>
         </div>
 
-        <!-- 52 Teeth Container (Distinct background so teeth pop!) -->
-        <div class="bg-slate-950/90 rounded-b-xl p-3 border-x border-b border-amber-900/30">
-          <div id="combTeethContainer" class="flex gap-1.5 pt-1 overflow-x-auto custom-scrollbar pb-3 min-h-[135px] items-start select-none">
-            <!-- 52 teeth -->
+        <!-- Teeth Shelf Container -->
+        <div class="bg-black/90 rounded-b-2xl p-4 border-x border-b border-amber-900/40">
+          <div id="combTeethContainer" class="flex gap-2 pt-1 overflow-x-auto custom-scrollbar pb-3 min-h-[140px] items-start select-none">
+            <!-- 52 teeth will be generated here -->
           </div>
 
-          <div class="flex items-center justify-between text-[11px] text-amber-400/90 font-mono pt-2 border-t border-slate-800">
-            <span>← V. 1 (15 Okt 2026)</span>
-            <span class="text-center italic text-amber-200/80 font-sans">Dra eller scrolla för att se alla 52 tänderna</span>
-            <span>V. 52 (15 Okt 2027) MUCK! →</span>
+          <div class="flex items-center justify-between text-xs text-amber-400 font-mono pt-3 border-t border-slate-800">
+            <span class="font-bold">← V. 1 (15 Okt 2026)</span>
+            <span class="text-center italic text-amber-200/90 font-sans text-[11px]">Dra eller scrolla för att se alla 52 tänderna</span>
+            <span class="font-bold">V. 52 (15 Okt 2027) MUCK! →</span>
           </div>
         </div>
 
@@ -534,7 +541,7 @@
       return { count, mondays };
     }
 
-    // TEETH RENDERING WITH CRISP VISIBILITY!
+    // INLINE STYLING GUARANTEES HIGH CONTRAST & VISIBILITY!
     function renderTeeth() {
       const container = document.getElementById("combTeethContainer");
       container.innerHTML = "";
@@ -549,19 +556,20 @@
         const isBroken = brokenWeeks.has(w.weekNum);
 
         const toothWrapper = document.createElement("div");
-        toothWrapper.className = "flex flex-col items-center flex-shrink-0 group relative";
+        toothWrapper.className = "flex flex-col items-center flex-shrink-0 select-none";
 
         const tooth = document.createElement("div");
         tooth.id = `tooth-${w.weekNum}`;
 
         if (isBroken) {
-          // BROKEN TOOTH: Short stump
-          tooth.className = "w-2.5 md:w-3 h-5 md:h-6 bg-amber-950/40 border-t-2 border-stone-700 rounded-b-sm cursor-default opacity-30 shadow-inner";
+          // BROKEN TOOTH (Stub)
+          tooth.style.cssText = "width: 12px; height: 18px; background: #292524; border-top: 2px solid #57534e; border-radius: 0 0 2px 2px; opacity: 0.35;";
           tooth.title = `${w.label} - Avbruten tand ✂️`;
         } else if (isPastInReality) {
-          // READY TO BREAK: Bright golden glow!
+          // READY TO BREAK: Bright golden pulsing glow!
           readyCount++;
-          tooth.className = "w-2.5 md:w-3 h-16 md:h-20 bg-gradient-to-b from-yellow-200 via-yellow-400 to-amber-500 rounded-b-md cursor-pointer transition transform hover:-translate-y-1.5 hover:brightness-125 shadow-xl ring-2 ring-yellow-300 animate-pulse";
+          tooth.style.cssText = "width: 12px; height: 75px; background: linear-gradient(180deg, #fef08a 0%, #facc15 50%, #eab308 100%); border-radius: 0 0 4px 4px; box-shadow: 0 0 12px #facc15; cursor: pointer;";
+          tooth.className = "animate-pulse";
           tooth.title = `${w.label} - Veckan är avklarad! Klicka för att bryta tanden! ✨`;
 
           tooth.addEventListener("click", () => {
@@ -569,7 +577,7 @@
           });
         } else if (currentMode === 'test' && allowFreeClicking) {
           // TEST FREE CLICKING
-          tooth.className = "w-2.5 md:w-3 h-16 md:h-20 bg-gradient-to-b from-yellow-300 via-amber-400 to-amber-500 rounded-b-md cursor-pointer hover:-translate-y-1 hover:brightness-125 shadow-md transition ring-1 ring-yellow-400";
+          tooth.style.cssText = "width: 12px; height: 75px; background: linear-gradient(180deg, #fde047 0%, #f59e0b 50%, #d97706 100%); border: 1px solid #fde047; border-radius: 0 0 4px 4px; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.5);";
           tooth.title = `${w.label} - Testläge: Klicka för att provknäcka! 🧪`;
 
           tooth.addEventListener("click", () => {
@@ -577,7 +585,7 @@
           });
         } else if (isCurrentInReality) {
           // CURRENT WEEK (In progress)
-          tooth.className = "w-2.5 md:w-3 h-16 md:h-20 bg-gradient-to-b from-amber-400 via-amber-500 to-amber-600 rounded-b-md cursor-pointer opacity-90 shadow-md border-b-2 border-amber-300 ring-1 ring-amber-400/50";
+          tooth.style.cssText = "width: 12px; height: 75px; background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%); border: 1px solid #fef08a; border-radius: 0 0 4px 4px; cursor: pointer; box-shadow: 0 0 8px #f59e0b;";
           tooth.title = `${w.label} - Pågår just nu! Kan brytas på fredag kl 17:00.`;
 
           tooth.addEventListener("click", () => {
@@ -587,9 +595,18 @@
             showToast(`Vecka ${w.weekNum} pågår just nu! Jobba klart veckan innan du bryter den! 💪`, "⏳");
           });
         } else {
-          // INTACT / LOCKED TEETH: CRISP, GLORIOUS WARM AMBER TEETH!
-          tooth.className = "w-2.5 md:w-3 h-16 md:h-20 bg-gradient-to-b from-amber-500 via-amber-600 to-amber-800 rounded-b-md cursor-pointer hover:brightness-110 shadow-md border-x border-amber-400/30 transition transform hover:-translate-y-0.5";
+          // INTACT / LOCKED TEETH: CRISP, SOLID WARM AMBER TEETH!
+          tooth.style.cssText = "width: 12px; height: 75px; background: linear-gradient(180deg, #f59e0b 0%, #d97706 50%, #b45309 100%); border: 1px solid #fbbf24; border-radius: 0 0 4px 4px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.5); transition: transform 0.15s ease;";
           tooth.title = `${w.label} - Framtida vecka. Låst!`;
+
+          tooth.addEventListener("mouseover", () => {
+            tooth.style.transform = "translateY(-2px)";
+            tooth.style.filter = "brightness(1.15)";
+          });
+          tooth.addEventListener("mouseout", () => {
+            tooth.style.transform = "translateY(0)";
+            tooth.style.filter = "none";
+          });
 
           tooth.addEventListener("click", () => {
             playLockSound();
@@ -600,7 +617,7 @@
         }
 
         const label = document.createElement("span");
-        label.className = "text-[9px] font-mono font-bold text-amber-400/80 mt-1 select-none";
+        label.className = "text-[10px] font-mono font-bold text-amber-400 mt-1 select-none";
         label.innerText = w.weekNum % 5 === 0 || w.weekNum === 1 || w.weekNum === 52 ? w.weekNum : "•";
 
         toothWrapper.appendChild(tooth);
@@ -750,7 +767,7 @@
       }
     }
 
-    // MODE SWITCHING LOGIC
+    // MODE SWITCHING
     const sharpBtn = document.getElementById("modeSharpBtn");
     const testBtn = document.getElementById("modeTestBtn");
     const testBanner = document.getElementById("testModeBanner");
@@ -765,8 +782,8 @@
     function setMode(mode) {
       currentMode = mode;
       if (mode === 'sharp') {
-        sharpBtn.className = "px-3 py-1 rounded-xl font-bold transition flex items-center gap-1.5 bg-emerald-600 text-white shadow-sm";
-        testBtn.className = "px-3 py-1 rounded-xl font-semibold text-slate-400 hover:text-amber-300 transition flex items-center gap-1.5";
+        sharpBtn.className = "px-3 py-1.5 rounded-xl font-bold transition flex items-center gap-1.5 bg-emerald-600 text-white shadow-sm";
+        testBtn.className = "px-3 py-1.5 rounded-xl font-semibold text-slate-400 hover:text-amber-300 transition flex items-center gap-1.5";
         testBanner.classList.add("hidden");
         sharpBar.classList.remove("hidden");
         testBar.classList.add("hidden");
@@ -779,8 +796,8 @@
         document.getElementById("freeClickToggle").checked = false;
         showToast("Växlat till Skarpt läge (Irenes officiella kam)", "🟢");
       } else {
-        testBtn.className = "px-3 py-1 rounded-xl font-bold transition flex items-center gap-1.5 bg-amber-500 text-slate-950 shadow-sm";
-        sharpBtn.className = "px-3 py-1 rounded-xl font-semibold text-slate-400 hover:text-emerald-400 transition flex items-center gap-1.5";
+        testBtn.className = "px-3 py-1.5 rounded-xl font-bold transition flex items-center gap-1.5 bg-amber-500 text-slate-950 shadow-sm";
+        sharpBtn.className = "px-3 py-1.5 rounded-xl font-semibold text-slate-400 hover:text-emerald-400 transition flex items-center gap-1.5";
         testBanner.classList.remove("hidden");
         sharpBar.classList.add("hidden");
         testBar.classList.remove("hidden");
