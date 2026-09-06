@@ -142,7 +142,7 @@
         </div>
       </div>
 
-      <!-- Pre-start notice with Math teaser link -->
+      <!-- Pre-start notice -->
       <div id="preStartBanner" class="mt-4 p-3.5 bg-amber-950/40 border border-amber-700/40 rounded-2xl flex items-center justify-between flex-wrap gap-3 text-xs text-amber-200">
         <div class="flex items-center gap-3">
           <span class="text-2xl">⏳</span>
@@ -166,7 +166,7 @@
             <span>🪮</span> Den 52-Tandade Muckarkammen
           </h2>
           <p class="text-xs text-slate-400 mt-0.5">
-            Varje tand = 1 hel arbetsvecka. <strong>Låses upp på fredagar kl 17:00</strong> när veckan är slut.
+            Varje tand = 1 arbetsvecka. Månaderna visas under tänderna så du ser exakt var du är!
           </p>
         </div>
 
@@ -200,7 +200,7 @@
         </div>
       </div>
 
-      <!-- Comb Graphic Box -->
+      <!-- Comb Graphic Box with Month Bar -->
       <div class="p-4 md:p-6 bg-slate-900 rounded-3xl shadow-2xl overflow-hidden border-2 border-amber-500/40">
         
         <!-- Comb Spine -->
@@ -214,14 +214,14 @@
         </div>
 
         <!-- Teeth Shelf Container -->
-        <div class="bg-black/90 rounded-b-2xl p-4 border-x border-b border-amber-900/40">
-          <div id="combTeethContainer" class="flex gap-2 pt-1 overflow-x-auto custom-scrollbar pb-3 min-h-[140px] items-start select-none">
+        <div class="bg-black/95 rounded-b-2xl p-4 border-x border-b border-amber-900/40">
+          <div id="combTeethContainer" class="flex gap-2 pt-1 overflow-x-auto custom-scrollbar pb-4 min-h-[160px] items-start select-none">
             <!-- 52 teeth will be generated here -->
           </div>
 
           <div class="flex items-center justify-between text-xs text-amber-400 font-mono pt-3 border-t border-slate-800">
             <span class="font-bold">← V. 1 (15 Okt 2026)</span>
-            <span class="text-center italic text-amber-200/90 font-sans text-[11px]">Dra eller scrolla för att se alla 52 tänderna</span>
+            <span class="text-center italic text-amber-200/90 font-sans text-[11px]">Dra eller scrolla för att se alla månaderna!</span>
             <span class="font-bold">V. 52 (15 Okt 2027) MUCK! →</span>
           </div>
         </div>
@@ -340,7 +340,7 @@
 
     <!-- Footer -->
     <footer class="text-center text-xs text-slate-500 py-4 space-y-1">
-      <p>Byggd med kärlek för Irene • 15 oktober 2026 till 15 oktober 2027</p>
+      <p>Byggd för Irene • 15 oktober 2026 till 15 oktober 2027</p>
       <p class="text-[11px]">Synkad via Supabase PostgreSQL Cloud med Realtime live-feed.</p>
     </footer>
 
@@ -377,7 +377,7 @@
     </div>
   </div>
 
-  <!-- MATH & RED DAYS MODAL ("HUR MATEMATIKEN FUNGERAR") -->
+  <!-- MATH & RED DAYS MODAL -->
   <div id="mathModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
     <div class="bg-slate-900 border border-amber-500/50 rounded-3xl max-w-2xl w-full p-6 md:p-8 space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar transform scale-95 transition-transform duration-300" id="mathModalBox">
       
@@ -443,7 +443,6 @@
         </div>
 
         <div class="space-y-2 text-xs">
-          <!-- 2026 -->
           <div class="text-[10px] font-bold text-amber-400/80 uppercase tracking-widest pt-1">År 2026:</div>
           <div class="p-2.5 bg-slate-800/70 rounded-xl border border-slate-700/70 flex items-center justify-between">
             <span class="flex items-center gap-2"><span>🎄</span> <strong>Julafton</strong></span>
@@ -458,7 +457,6 @@
             <span class="font-mono text-slate-300">Torsdag 31 december 2026</span>
           </div>
 
-          <!-- 2027 -->
           <div class="text-[10px] font-bold text-amber-400/80 uppercase tracking-widest pt-2">År 2027:</div>
           <div class="p-2.5 bg-slate-800/70 rounded-xl border border-slate-700/70 flex items-center justify-between">
             <span class="flex items-center gap-2"><span>🎆</span> <strong>Nyårsdagen</strong></span>
@@ -486,7 +484,6 @@
           </div>
         </div>
 
-        <!-- Note about weekend holidays -->
         <div class="p-3 bg-slate-800/40 rounded-xl border border-slate-700/40 text-[11px] text-slate-400">
           <strong class="text-slate-300">Obs:</strong> Första maj 2027 infaller på en lördag och Nationaldagen 6 juni 2027 infaller på en söndag. De är därför redan inräknade som vanliga helgdagar i steg 2.
         </div>
@@ -551,16 +548,26 @@
     const END_DATE = new Date("2027-10-15T00:00:00");
     const TOTAL_WEEKS = 52;
 
+    // Swedish month names
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "Maj", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dec"];
+
     const weeks = [];
     let curWeekStart = new Date(START_DATE);
     for (let i = 1; i <= TOTAL_WEEKS; i++) {
       const wStart = new Date(curWeekStart);
       const wEnd = new Date(curWeekStart);
       wEnd.setDate(wEnd.getDate() + 7);
+      
+      const mIdx = wStart.getMonth();
+      const mName = monthNames[mIdx];
+      const yr = wStart.getFullYear();
+
       weeks.push({
         weekNum: i,
         startDate: wStart,
         endDate: wEnd,
+        monthName: mName,
+        year: yr,
         label: `Vecka ${i} (${wStart.toLocaleDateString('sv-SE', {day: 'numeric', month: 'short'})} – ${wEnd.toLocaleDateString('sv-SE', {day: 'numeric', month: 'short'})})`
       });
       curWeekStart.setDate(curWeekStart.getDate() + 7);
@@ -674,6 +681,7 @@
       return { count, mondays };
     }
 
+    // TEETH RENDERING WITH MONTH LABELS & WEEK NUMBERS!
     function renderTeeth() {
       const container = document.getElementById("combTeethContainer");
       container.innerHTML = "";
@@ -681,11 +689,16 @@
 
       let readyCount = 0;
       let brokenCount = brokenWeeks.size;
+      let prevMonth = "";
 
-      weeks.forEach((w) => {
+      weeks.forEach((w, idx) => {
         const isPastInReality = now >= w.endDate; 
         const isCurrentInReality = now >= w.startDate && now < w.endDate;
         const isBroken = brokenWeeks.has(w.weekNum);
+
+        // Detect if this week is the start of a new month
+        const isNewMonth = w.monthName !== prevMonth;
+        prevMonth = w.monthName;
 
         const toothWrapper = document.createElement("div");
         toothWrapper.className = "flex flex-col items-center flex-shrink-0 select-none";
@@ -694,11 +707,9 @@
         tooth.id = `tooth-${w.weekNum}`;
 
         if (isBroken) {
-          // BROKEN TOOTH (Stub)
           tooth.style.cssText = "width: 12px; height: 18px; background: #292524; border-top: 2px solid #57534e; border-radius: 0 0 2px 2px; opacity: 0.35;";
           tooth.title = `${w.label} - Avbruten tand ✂️`;
         } else if (isPastInReality) {
-          // READY TO BREAK: Bright golden pulsing glow!
           readyCount++;
           tooth.style.cssText = "width: 12px; height: 75px; background: linear-gradient(180deg, #fef08a 0%, #facc15 50%, #eab308 100%); border-radius: 0 0 4px 4px; box-shadow: 0 0 12px #facc15; cursor: pointer;";
           tooth.className = "animate-pulse";
@@ -708,7 +719,6 @@
             promptBreakTooth(w.weekNum, tooth);
           });
         } else if (currentMode === 'test' && allowFreeClicking) {
-          // TEST FREE CLICKING
           tooth.style.cssText = "width: 12px; height: 75px; background: linear-gradient(180deg, #fde047 0%, #f59e0b 50%, #d97706 100%); border: 1px solid #fde047; border-radius: 0 0 4px 4px; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.5);";
           tooth.title = `${w.label} - Testläge: Klicka för att provknäcka! 🧪`;
 
@@ -716,7 +726,6 @@
             promptBreakTooth(w.weekNum, tooth);
           });
         } else if (isCurrentInReality) {
-          // CURRENT WEEK (In progress)
           tooth.style.cssText = "width: 12px; height: 75px; background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%); border: 1px solid #fef08a; border-radius: 0 0 4px 4px; cursor: pointer; box-shadow: 0 0 8px #f59e0b;";
           tooth.title = `${w.label} - Pågår just nu! Kan brytas på fredag kl 17:00.`;
 
@@ -727,7 +736,6 @@
             showToast(`Vecka ${w.weekNum} pågår just nu! Jobba klart veckan innan du bryter den! 💪`, "⏳");
           });
         } else {
-          // INTACT / LOCKED TEETH: CRISP, SOLID WARM AMBER TEETH!
           tooth.style.cssText = "width: 12px; height: 75px; background: linear-gradient(180deg, #f59e0b 0%, #d97706 50%, #b45309 100%); border: 1px solid #fbbf24; border-radius: 0 0 4px 4px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.5); transition: transform 0.15s ease;";
           tooth.title = `${w.label} - Framtida vecka. Låst!`;
 
@@ -744,16 +752,39 @@
             playLockSound();
             tooth.classList.add("tooth-locked-wiggle");
             setTimeout(() => tooth.classList.remove("tooth-locked-wiggle"), 400);
-            showToast(`Tålamod Irene! Vecka ${w.weekNum} har inte passerat än! 🔒`, "🔒");
+            showToast(`Tålamod Irene! Vecka ${w.weekNum} (${w.monthName}) har inte passerat än! 🔒`, "🔒");
           });
         }
 
-        const label = document.createElement("span");
-        label.className = "text-[10px] font-mono font-bold text-amber-400 mt-1 select-none";
-        label.innerText = w.weekNum % 5 === 0 || w.weekNum === 1 || w.weekNum === 52 ? w.weekNum : "•";
+        // Row 1: Week Number or dot
+        const weekLabel = document.createElement("span");
+        weekLabel.className = "text-[10px] font-mono font-bold text-amber-400 mt-1 select-none";
+        weekLabel.innerText = w.weekNum % 5 === 0 || w.weekNum === 1 || w.weekNum === 52 ? w.weekNum : "•";
+
+        // Row 2: Month tag (Shown on the first week of every month)
+        const monthLabel = document.createElement("div");
+        monthLabel.className = "h-4 flex items-center justify-center mt-0.5 select-none";
+        if (isNewMonth) {
+          const mBadge = document.createElement("span");
+          // Special badge if it's the turn of the year (Jan 2027)
+          if (w.monthName === "Jan") {
+            mBadge.className = "text-[9px] font-mono font-black uppercase text-amber-300 bg-amber-950/80 px-1 py-0.5 rounded border border-amber-600/60 whitespace-nowrap shadow-sm";
+            mBadge.innerText = "Jan '27";
+          } else {
+            mBadge.className = "text-[9px] font-mono font-bold uppercase text-amber-200 bg-slate-800/90 px-1 py-0.5 rounded border border-slate-700 whitespace-nowrap";
+            mBadge.innerText = w.monthName;
+          }
+          monthLabel.appendChild(mBadge);
+        } else {
+          const tick = document.createElement("span");
+          tick.className = "text-[8px] text-slate-700";
+          tick.innerText = "┆";
+          monthLabel.appendChild(tick);
+        }
 
         toothWrapper.appendChild(tooth);
-        toothWrapper.appendChild(label);
+        toothWrapper.appendChild(weekLabel);
+        toothWrapper.appendChild(monthLabel);
         container.appendChild(toothWrapper);
       });
 
